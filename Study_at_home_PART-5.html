@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMK SWASTA ASSISI - Portal Akademik Terpadu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- QR Code Generator & Scanner -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#e3242b', primaryDark: '#b91c22', surface: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f1f5f9; -webkit-font-smoothing: antialiased; }
+        .hidden-section { display: none !important; }
+        .prevent-select { user-select: none; -webkit-user-select: none; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Table Styling */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { background-color: #f8fafc; color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase; padding: 11px 10px; border-bottom: 2px solid #e2e8f0; text-align: left; white-space: nowrap; }
+        td { padding: 11px 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #334155; background: white; vertical-align: top; }
+        
+        /* Modal & Animations */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 100; }
+    </style>
+</head>
+<body class="text-slate-800 flex h-screen overflow-hidden">
+
+    <!-- ================= 1. HALAMAN LOGIN ================= -->
+    <div id="view-login" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 fade-in">
+        <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md border-t-8 border-primary">
+            <div class="text-center mb-8">
+                <div class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg">
+                    <i class="fas fa-school"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">SMK SWASTA ASSISI</h2>
+                <p class="text-slate-500 text-sm mt-1">SELAMAT DATANG DI Sistem SMK SWASTA ASSISI</p>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">PERAN AKSES</label>
+                    <select id="login-role" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary outline-none">
+                        <option value="Siswa">SISWA/I</option>
+                        <option value="Guru">GURU</option>
+                        <option value="Admin">ADMIN</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">USERNAME</label>
+                    <input type="text" id="login-username" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="Masukkan NAMA/NIS/NIP">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">PASSWORD</label>
+                    <input type="password" id="login-Password" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary outline-none" placeholder="Masukkan PASSWORD">
+                </div>
+                <button onclick="prosesLogin()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition duration-200">
+                    LOGIN
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 2. SIDEBAR ================= -->
+    <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 flex flex-col shadow-sm hidden-section z-20 h-full">
+        <div class="p-5 border-b border-slate-100 flex items-center gap-3">
+            <div class="bg-primary text-white p-2 rounded-lg"><i class="fas fa-graduation-cap"></i></div>
+            <div>
+                <h1 class="font-bold text-slate-800 leading-tight">SMK ASSISI</h1>
+                <span id="badge-role" class="text-[10px] font-bold bg-slate-100 text-primary px-2 py-0.5 rounded-full uppercase tracking-wider">ROLE</span>
+            </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1.5" id="nav-menu">
+            <!-- Nav buttons generated via JS based on role -->
+        </nav>
+        <div class="p-4 border-t border-slate-100">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold"><i class="fas fa-user"></i></div>
+                <div class="overflow-hidden">
+                    <p id="display-name" class="text-sm font-bold text-slate-800 truncate">User</p>
+                </div>
+            </div>
+            <button onclick="prosesLogout()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold rounded-lg text-white bg-slate-800 hover:bg-slate-900 transition-colors">
+                <i class="fas fa-power-off"></i> KELUAR
+            </button>
+        </div>
+    </aside>
+
+    <!-- ================= 3. MAIN CONTENT ================= -->
+    <main id="main-content" class="flex-1 flex flex-col h-screen overflow-hidden hidden-section bg-slate-50">
+        <!-- BAR WAKTU REAL-TIME (HARI, TANGGAL, TAHUN + JAM BERJALAN) -->
+        <div class="bg-white border-b border-slate-200 px-6 py-2.5 flex flex-wrap justify-between items-center gap-2 shadow-xs">
+            <div class="text-xs font-semibold text-slate-500 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>SISTEM AKADEMIK SMK SWASTA ASSISI</span>
+            </div>
+            <div class="flex items-center gap-3 bg-slate-900 text-white px-4 py-1.5 rounded-lg text-xs">
+                <i class="far fa-calendar-alt text-amber-400"></i>
+                <span id="global-live-date" class="font-semibold text-slate-100">Memuat Tanggal...</span>
+                <span class="text-slate-500">|</span>
+                <i class="far fa-clock text-emerald-400"></i>
+                <span id="global-live-clock" class="font-mono font-bold text-emerald-400">00:00:00 WIB</span>
+            </div>
+        </div>
+
+        <!-- TOPBAR PERINGATAN UJIAN + HARI/TANGGAL/TAHUN + JAM BERJALAN & SISA WAKTU -->
+        <div id="topbar-warning" class="hidden-section bg-primary text-white px-6 py-3 flex flex-wrap justify-between items-center gap-3 shadow-md z-10">
+            <div class="font-bold flex items-center gap-2">
+                <i class="fas fa-shield-alt animate-pulse"></i>
+                <span>MODE UJIAN AKTIF (ANTI-CHEAT)</span>
+                <span id="exam-active-mapel" class="text-xs bg-white text-primary px-2 py-0.5 rounded font-extrabold">MAPEL</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- Hari, Tanggal, Tahun & Jam Berjalan Real-Time -->
+                <div class="bg-slate-900/70 px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-2">
+                    <i class="far fa-clock text-amber-300"></i>
+                    <div class="text-xs leading-tight">
+                        <span id="live-date-display" class="block text-[10px] text-amber-200 font-semibold">Hari, Tanggal Tahun</span>
+                        <span id="live-clock-display" class="font-mono font-bold text-sm">00:00:00 WIB</span>
+                    </div>
+                </div>
+                <!-- Hitung Mundur Sisa Waktu -->
+                <div class="bg-black/30 px-4 py-1.5 rounded-lg border border-white/30 flex items-center gap-2">
+                    <i class="fas fa-hourglass-half text-red-200 animate-spin"></i>
+                    <div class="text-xs leading-tight">
+                        <span class="block text-[10px] text-red-100 uppercase">Sisa Waktu</span>
+                        <span id="timer-display" class="font-mono font-bold text-lg">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6" id="content-area">
+            <!-- Tempat Konten Menu Dirender -->
+        </div>
+    </main>
+
+    <!-- ================= JAVASCRIPT ================= -->
+    <script>
+        /* --- STATE & DATABASE LOKAL (LocalStorage) --- */
+        let currentUser = { role: '', name: '' };
+        let isExamActive = false;
+        let examTimer = null;
+        let liveClockInterval = null;
+        let activeExamSubject = '';
+        let html5QrScanner = null;
+        let activeCameraStream = null;
+        let lastQrTimestamp = null;
+
+        let db = {
+            jadwalUjian: JSON.parse(localStorage.getItem('db_jadwalUjian')) || [],
+            jadwalHarian: JSON.parse(localStorage.getItem('db_jadwalHarian')) || [],
+            presensi: JSON.parse(localStorage.getItem('db_presensi')) || [],
+            materi: JSON.parse(localStorage.getItem('db_materi')) || [],
+            soal: JSON.parse(localStorage.getItem('db_soal')) || [],
+            hasilUjian: JSON.parse(localStorage.getItem('db_hasilUjian')) || [],
+            nilaiTugas: JSON.parse(localStorage.getItem('db_nilaiTugas')) || [],
+            catatanSiswa: JSON.parse(localStorage.getItem('db_catatanSiswa')) || [],
+            sesiQR: JSON.parse(localStorage.getItem('db_sesiQR')) || []
+        };
+
+        const listHari = ["SENIN", "SELASA", "RABU", "KAMIS", "JUMAT", "SABTU"];
+        const listKelas = ["10 RPL", "10 TB", "10 AK", "11 RPL", "11 TB", "11 AK", "12 RPL", "12 TB", "12 AK"];
+        const listKompetensi = ["AK", "RPL", "TB"];
+        const listMapel = ["Agama", "PKN", "Bahasa Indonesia", "Matematika", "Bahasa Inggris", "Kejuruan RPL", "Kejuruan TB", "Kejuruan AK", "IPA", "IPS"];
+        const listGuru = ["Sr.Gaudensia Silalahi", "H.Tindaon", "P.Tambunan", "E.Sirait", "E.Silalahi", "A.Lumbantobing", "M.Haloho", "E.Nainggolan", "L.Panggabean", "E.Gultom", "K.Silitonga", "O.Nadeak"];
+
+        function saveData() {
+            localStorage.setItem('db_jadwalUjian', JSON.stringify(db.jadwalUjian));
+            localStorage.setItem('db_jadwalHarian', JSON.stringify(db.jadwalHarian));
+            localStorage.setItem('db_presensi', JSON.stringify(db.presensi));
+            localStorage.setItem('db_materi', JSON.stringify(db.materi));
+            localStorage.setItem('db_soal', JSON.stringify(db.soal));
+            localStorage.setItem('db_hasilUjian', JSON.stringify(db.hasilUjian));
+            localStorage.setItem('db_nilaiTugas', JSON.stringify(db.nilaiTugas));
+            localStorage.setItem('db_catatanSiswa', JSON.stringify(db.catatanSiswa));
+            localStorage.setItem('db_sesiQR', JSON.stringify(db.sesiQR));
+        }
+
+        function stopMediaResources() {
+            if (html5QrScanner) {
+                try {
+                    html5QrScanner.stop().then(() => html5QrScanner.clear()).catch(() => {});
+                } catch (e) {}
+                html5QrScanner = null;
+            }
+            if (activeCameraStream) {
+                activeCameraStream.getTracks().forEach(track => track.stop());
+                activeCameraStream = null;
+            }
+        }
+
+        /* --- HELPER WAKTU REAL-TIME PERANGKAT (HARI, TANGGAL, TAHUN & JAM) --- */
+        function getDeviceDateTimeInfo() {
+            const now = new Date();
+            const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+            const hari = namaHari[now.getDay()];
+            const tglNum = String(now.getDate()).padStart(2, '0');
+            const blnNum = String(now.getMonth() + 1).padStart(2, '0');
+            const blnNama = namaBulan[now.getMonth()];
+            const tahun = now.getFullYear();
+
+            const jam = String(now.getHours()).padStart(2, '0');
+            const menit = String(now.getMinutes()).padStart(2, '0');
+            const detik = String(now.getSeconds()).padStart(2, '0');
+
+            return {
+                hari,
+                tanggalLengkap: `${hari}, ${tglNum} ${blnNama} ${tahun}`,
+                tanggalAngka: `${tglNum}-${blnNum}-${tahun}`,
+                isoDate: `${tahun}-${blnNum}-${tglNum}`,
+                jamStr: `${jam}:${menit}:${detik}`,
+                fullTimestamp: `${hari}, ${tglNum}-${blnNum}-${tahun} Pukul ${jam}:${menit}:${detik} WIB`
+            };
+        }
+
+        function formatTglIndo(isoStr) {
+            if (!isoStr) return '-';
+            const parts = isoStr.split('-');
+            if (parts.length === 3 && parts[0].length === 4) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return isoStr;
+        }
+
+        function startLiveClock() {
+            if (liveClockInterval) clearInterval(liveClockInterval);
+            const updateClock = () => {
+                const info = getDeviceDateTimeInfo();
+                const elGlobalDate = document.getElementById('global-live-date');
+                const elGlobalClock = document.getElementById('global-live-clock');
+                const elTopDate = document.getElementById('live-date-display');
+                const elTopbar = document.getElementById('live-clock-display');
+                const elDashDate = document.getElementById('dashboard-live-date');
+                const elDash = document.getElementById('dashboard-live-clock');
+
+                if (elGlobalDate) elGlobalDate.innerText = info.tanggalLengkap;
+                if (elGlobalClock) elGlobalClock.innerText = info.jamStr + ' WIB';
+                if (elTopDate) elTopDate.innerText = info.tanggalLengkap;
+                if (elTopbar) elTopbar.innerText = info.jamStr + ' WIB';
+                if (elDashDate) elDashDate.innerText = info.tanggalLengkap;
+                if (elDash) elDash.innerText = info.jamStr + ' WIB';
+            };
+            updateClock();
+            liveClockInterval = setInterval(updateClock, 1000);
+        }
+
+        /* --- LOGIN & LOGOUT --- */
+        function prosesLogin() {
+            let role = document.getElementById('login-role').value;
+            let name = document.getElementById('login-username').value.trim();
+            if (!name) { alert('Nama pengguna wajib diisi!'); return; }
+
+            currentUser = { role, name };
+            document.getElementById('view-login').classList.add('hidden-section');
+            document.getElementById('sidebar').classList.remove('hidden-section');
+            document.getElementById('main-content').classList.remove('hidden-section');
+            
+            document.getElementById('badge-role').innerText = role;
+            document.getElementById('display-name').innerText = name;
+            
+            startLiveClock();
+            renderMenu();
+            renderDashboard();
+        }
+
+        function prosesLogout() {
+            if (isExamActive) {
+                picuAntiCheat("Sistem menolak logout. Anda masih dalam sesi ujian aktif!");
+                return;
+            }
+            stopMediaResources();
+            location.reload();
+        }
+
+        /* --- NAVIGASI (GURU, SISWA, ADMIN DIPISAHKAN TEMPATNYA) --- */
+        function renderMenu() {
+            const menu = document.getElementById('nav-menu');
+            let html = `<button onclick="renderDashboard()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary transition-colors"><i class="fas fa-home w-5"></i> Beranda</button>`;
+            
+            if (currentUser.role === 'Admin') {
+                html += `
+                    <button onclick="renderPresensiAdmin()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold rounded-lg bg-red-50 text-primary hover:bg-red-100 transition-colors"><i class="fas fa-qrcode w-5"></i> Presensi QR & Foto Admin</button>
+                    <button onclick="renderJadwalUjian()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-calendar-check w-5"></i> Jadwal Ujian</button>
+                    <button onclick="renderJadwalHarian()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-calendar-alt w-5"></i> Jadwal Pelajaran</button>
+                    <button onclick="renderManajemenSoal()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-file-alt w-5"></i> Soal Ujian</button>
+                    <button onclick="renderGeneratorQR()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-qrcode w-5"></i> Buat Kode QR Presensi</button>
+                    <button onclick="renderPresensi()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-camera-retro w-5"></i> Rekap Presensi & Foto</button>
+                    <button onclick="renderMateri()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-book w-5"></i> Manajemen Materi</button>
+                    <button onclick="renderRekapTugasSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-tasks w-5"></i> Data Upload Tugas Siswa</button>
+                    <button onclick="renderRekapCatatanSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-sticky-note w-5"></i> Data Catatan Upload Siswa</button>
+                    <button onclick="renderLaporan()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-chart-bar w-5"></i> Laporan Nilai Ujian</button>
+                `;
+            } else if (currentUser.role === 'Guru') {
+                html += `
+                    <button onclick="renderPresensiGuru()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold rounded-lg bg-red-50 text-primary hover:bg-red-100 transition-colors"><i class="fas fa-qrcode w-5"></i> Presensi QR & Foto Guru</button>
+                    <button onclick="renderJadwalUjian()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-calendar-check w-5"></i> Jadwal Ujian</button>
+                    <button onclick="renderJadwalHarian()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-calendar-alt w-5"></i> Jadwal Pelajaran</button>
+                    <button onclick="renderManajemenSoal()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-file-alt w-5"></i> Soal Ujian</button>
+                    <button onclick="renderGeneratorQR()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-qrcode w-5"></i> Buat QR Absen Siswa</button>
+                    <button onclick="renderPresensi()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-camera-retro w-5"></i> Rekap Kehadiran & Foto</button>
+                    <button onclick="renderRekapTugasSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-tasks w-5"></i> Data Upload Tugas Siswa</button>
+                    <button onclick="renderRekapCatatanSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-sticky-note w-5"></i> Data Catatan Upload Siswa</button>
+                    <button onclick="renderMateri()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-book w-5"></i> Manajemen Materi</button>
+                    <button onclick="renderLaporan()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-chart-bar w-5"></i> Laporan Nilai Ujian</button>
+                `;
+            } else if (currentUser.role === 'Siswa') {
+                html += `
+                    <button onclick="renderPresensiSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold rounded-lg bg-red-50 text-primary hover:bg-red-100 transition-colors"><i class="fas fa-qrcode w-5"></i> Presensi QR & Foto Siswa</button>
+                    <button onclick="renderJadwalSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-calendar w-5"></i> Jadwal Ujian & Pelajaran</button>
+                    <button onclick="renderUjianSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-laptop-code w-5"></i> Portal Ujian</button>
+                    <button onclick="renderUploadTugasSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-upload w-5"></i> Upload Tugas / Nilai Siswa</button>
+                    <button onclick="renderUploadCatatanOlehSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-sticky-note w-5"></i> Upload Catatan Siswa</button>
+                    <button onclick="renderMateriSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-book w-5"></i> Materi Pembelajaran</button>
+                    <button onclick="renderNilaiSiswa()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg text-slate-600 hover:bg-red-50 hover:text-primary"><i class="fas fa-award w-5"></i> Hasil & Nilai Ujian</button>
+                `;
+            }
+            menu.innerHTML = html;
+        }
+
+        function setContent(html) {
+            if (isExamActive) {
+                picuAntiCheat("Dilarang berpindah menu selama ujian berlangsung!");
+                return;
+            }
+            stopMediaResources();
+            document.getElementById('content-area').innerHTML = `<div class="fade-in">${html}</div>`;
+            startLiveClock();
+        }
+
+        /* --- GENERATOR OPSI --- */
+        function genOptions(arr) { return arr.map(a => `<option value="${a}">${a}</option>`).join(''); }
+        function genNumOptions(start, end, padZero = false) { 
+            let res = ''; 
+            for(let i=start; i<=end; i++) {
+                let label = padZero ? String(i).padStart(2, '0') : i;
+                res += `<option value="${i}">${label}</option>`;
+            }
+            return res; 
+        }
+
+        /* ================= FITUR 1: BERANDA (GAMBAR 1) ================= */
+        function renderDashboard() {
+            const isSiswa = currentUser.role === 'Siswa';
+            const isGuru = currentUser.role === 'Guru';
+            const myPresensiCount = db.presensi.filter(p => p.nama.toLowerCase() === currentUser.name.toLowerCase() && p.peran === currentUser.role).length;
+            const infoWaktu = getDeviceDateTimeInfo();
+
+            setContent(`
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">Selamat Datang, ${currentUser.name}!</h2>
+                        <p class="text-slate-500">Anda login sebagai <span class="font-bold text-primary">${currentUser.role}</span> di Sistem Akademik SMK Swasta Assisi.</p>
+                    </div>
+                    <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl text-right border-l-4 border-primary shadow-md">
+                        <span class="text-[11px] uppercase tracking-wider text-slate-400 block">Hari, Tanggal & Waktu Perangkat</span>
+                        <span id="dashboard-live-date" class="text-sm font-bold text-amber-300 block mt-0.5">${infoWaktu.tanggalLengkap}</span>
+                        <span id="dashboard-live-clock" class="text-2xl font-mono font-bold text-emerald-400">${infoWaktu.jamStr} WIB</span>
+                    </div>
+                </div>
+
+                <!-- KHUSUS SISWA: LANGSUNG MUNCUL FITUR SCAN QR CODE MENGGUNAKAN KAMERA + TIMESTAMP REAL-TIME (GAMBAR 1) -->
+                ${isSiswa ? `
+                <div class="bg-white p-6 rounded-xl shadow-sm border-2 border-primary/30 mb-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase bg-red-100 text-primary px-2.5 py-1 rounded">Presensi Kamera Real-Time Siswa</span>
+                            <h3 class="text-xl font-bold text-slate-800 mt-1.5"><i class="fas fa-qrcode text-primary mr-2"></i>Scan QR Code Menggunakan Kamera</h3>
+                            <p class="text-xs text-slate-500">Setiap kali QR berhasil terbaca, sistem otomatis mencatat timestamp (hari, tanggal, tahun, dan jam saat ini) secara real-time dari perangkat.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="mulaiKameraQR('dash-qr-reader', 'dash-qr-code', 'dash-qr-timestamp')" class="bg-primary hover:bg-primaryDark text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow">
+                                <i class="fas fa-camera mr-1"></i> AKTIFKAN KAMERA SCAN QR
+                            </button>
+                            <button type="button" onclick="renderPresensiSiswa()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-lg">
+                                <i class="fas fa-images mr-1"></i> KE SLIDE PRESENSI & BUKTI FOTO
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        <!-- Kamera Scan QR Langsung -->
+                        <div class="bg-slate-900 rounded-xl p-3 text-center">
+                            <div id="dash-qr-reader" class="w-full rounded-lg overflow-hidden bg-black min-h-[240px] flex items-center justify-center text-slate-400 text-xs">
+                                Kamera Scan QR sedang disiapkan...
+                            </div>
+                        </div>
+
+                        <!-- Hasil Scan QR & Timestamp Real-Time Otomatis -->
+                        <div class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-200">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kode QR Terbaca</label>
+                                <input type="text" id="dash-qr-code" class="w-full p-2.5 border rounded-lg font-mono font-bold text-primary bg-white" placeholder="Arahkan QR Code ke kamera..." readonly>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                                <span class="text-[11px] font-bold uppercase text-emerald-800 block mb-1"><i class="fas fa-clock mr-1"></i> Timestamp Otomatis Real-Time Perangkat:</span>
+                                <p id="dash-qr-timestamp" class="text-sm font-bold text-slate-800">Menunggu pembacaan QR Code...</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold mb-1">Kategori</label>
+                                    <select id="dash-pres-tipe" class="w-full p-2 border rounded-lg text-sm bg-white">
+                                        <option value="Sehari-hari">Kehadiran Sehari-hari</option>
+                                        <option value="Ujian">Kehadiran Ujian</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold mb-1">Kelas</label>
+                                    <select id="dash-pres-kelas" class="w-full p-2 border rounded-lg text-sm bg-white">${genOptions(listKelas)}</select>
+                                </div>
+                            </div>
+                            <button type="button" onclick="lanjutKeSlideFotoSiswa()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow text-sm">
+                                <i class="fas fa-arrow-right mr-1"></i> LANJUT UPLOAD BUKTI FOTO KEHADIRAN (WAJIB)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Ringkasan Data -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-bold text-slate-400 uppercase">Jadwal Ujian Aktif</p>
+                        <p class="text-3xl font-bold text-primary mt-1">${db.jadwalUjian.length}</p>
+                        <p class="text-xs text-slate-500 mt-1">Ditetapkan Admin/Guru</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-bold text-slate-400 uppercase">${isSiswa ? 'Tugas Diupload Saya' : 'Total Tugas Upload Siswa'}</p>
+                        <p class="text-3xl font-bold text-blue-600 mt-1">${isSiswa ? db.nilaiTugas.filter(t => t.namaSiswa.toLowerCase() === currentUser.name.toLowerCase()).length : db.nilaiTugas.length}</p>
+                        <p class="text-xs text-slate-500 mt-1">Tersinkronisasi otomatis</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-bold text-slate-400 uppercase">${isSiswa ? 'Catatan Diupload Saya' : 'Total Catatan Upload Siswa'}</p>
+                        <p class="text-3xl font-bold text-emerald-600 mt-1">${isSiswa ? db.catatanSiswa.filter(c => c.namaSiswa.toLowerCase() === currentUser.name.toLowerCase()).length : db.catatanSiswa.length}</p>
+                        <p class="text-xs text-slate-500 mt-1">Catatan belajar siswa</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <p class="text-xs font-bold text-slate-400 uppercase">${isSiswa || isGuru ? 'Presensi & Foto Saya' : 'Total Rekap Presensi'}</p>
+                        <p class="text-3xl font-bold text-amber-500 mt-1">${isSiswa || isGuru ? myPresensiCount : db.presensi.length}</p>
+                        <p class="text-xs text-slate-500 mt-1">Harian & Ujian dengan bukti foto</p>
+                    </div>
+                </div>
+            `);
+
+            // Jika Siswa, langsung jalankan kamera scan QR di Beranda
+            if (isSiswa) {
+                setTimeout(() => {
+                    mulaiKameraQR('dash-qr-reader', 'dash-qr-code', 'dash-qr-timestamp', true);
+                }, 300);
+            }
+        }
+
+        function lanjutKeSlideFotoSiswa() {
+            const code = document.getElementById('dash-qr-code').value;
+            const tipe = document.getElementById('dash-pres-tipe').value;
+            const kelas = document.getElementById('dash-pres-kelas').value;
+            renderPresensiSiswa(2, code, tipe, kelas);
+        }
+
+        /* ================= GENERATOR QR CODE (ADMIN & GURU) ================= */
+        function renderGeneratorQR() {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Buat & Cetak QR Code Kehadiran</h2>
+                    <p class="text-sm text-slate-500">Buat QR Code resmi untuk discan secara terpisah oleh Siswa, Guru, maupun Admin.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4 border-b pb-2"><i class="fas fa-plus-circle text-primary mr-2"></i>Pengaturan QR Code Baru</h3>
+                        <form onsubmit="buatSesiQR(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Target Pengguna Scan QR</label>
+                                <select id="qr-target-peran" class="w-full p-2.5 border rounded-lg" required>
+                                    <option value="Siswa">Kehadiran Siswa</option>
+                                    <option value="Guru">Kehadiran Guru</option>
+                                    <option value="Admin">Kehadiran Admin</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Kategori Kehadiran</label>
+                                <select id="qr-kategori" class="w-full p-2.5 border rounded-lg" required>
+                                    <option value="Sehari-hari">Kehadiran Sehari-Hari (Harian)</option>
+                                    <option value="Ujian">Kehadiran Ujian</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-bold mb-1">Kelas / Ruangan</label>
+                                    <select id="qr-kelas" class="w-full p-2.5 border rounded-lg">
+                                        <option value="Semua Kelas / Ruang Guru / Kantor">Semua Kelas / Ruang Guru / Kantor</option>
+                                        ${genOptions(listKelas)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-1">Mata Pelajaran / Ujian</label>
+                                    <select id="qr-mapel" class="w-full p-2.5 border rounded-lg">
+                                        <option value="Absensi Umum">Absensi Umum</option>
+                                        ${genOptions(listMapel)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Tanggal Berlaku</label>
+                                <input type="date" id="qr-tgl" value="${new Date().toISOString().split('T')[0]}" class="w-full p-2.5 border rounded-lg" required>
+                            </div>
+                            <button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-3 rounded-lg shadow">
+                                <i class="fas fa-qrcode mr-2"></i> GENERATE QR CODE SEKARANG
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center text-center">
+                        <h3 class="font-bold text-slate-800 mb-2">Tampilan QR Code Aktif</h3>
+                        <p id="qr-caption" class="text-xs text-slate-500 mb-4">Klik "Generate QR Code" untuk menampilkan QR siap scan</p>
+                        <div id="qrcode-container" class="p-4 bg-white border-2 border-slate-200 rounded-xl shadow-inner min-h-[220px] min-w-[220px] flex items-center justify-center">
+                            <span class="text-xs text-slate-400">Belum ada QR dipilih</span>
+                        </div>
+                        <p id="qr-code-text" class="font-mono text-xs font-bold bg-slate-100 px-3 py-1.5 rounded mt-3 text-slate-700"></p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mt-6">
+                    <div class="px-5 py-3 bg-slate-800 text-white font-bold text-sm">Daftar Sesi QR Code Tersimpan</div>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead><tr><th>Kode QR</th><th>Target</th><th>Kategori</th><th>Kelas & Mapel</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+                            <tbody>
+                                ${db.sesiQR.map(q => `
+                                    <tr>
+                                        <td class="font-mono font-bold text-primary">${q.kode}</td>
+                                        <td><span class="px-2 py-0.5 rounded text-xs font-bold bg-slate-100">${q.targetPeran}</span></td>
+                                        <td><span class="px-2 py-0.5 rounded text-xs font-bold ${q.kategori === 'Ujian' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}">${q.kategori}</span></td>
+                                        <td>${q.kelas} — ${q.mapel}</td>
+                                        <td>${formatTglIndo(q.tgl)}</td>
+                                        <td class="space-x-1">
+                                            <button onclick="tampilkanQR('${q.kode}', '${q.targetPeran} - ${q.kategori} (${q.kelas})')" class="bg-emerald-600 text-white px-2.5 py-1 rounded text-xs font-bold">TAMPILKAN QR</button>
+                                            <button onclick="hapusData('sesiQR', ${q.id}, renderGeneratorQR)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">HAPUS</button>
+                                        </td>
+                                    </tr>
+                                `).join('') || `<tr><td colspan="6" class="text-center text-slate-400 py-4">Belum ada QR Code yang dibuat.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            setContent(html);
+            if (db.sesiQR.length > 0) {
+                const last = db.sesiQR[db.sesiQR.length - 1];
+                tampilkanQR(last.kode, `${last.targetPeran} - ${last.kategori} (${last.kelas})`);
+            }
+        }
+
+        function buatSesiQR(e) {
+            e.preventDefault();
+            const targetPeran = document.getElementById('qr-target-peran').value;
+            const kategori = document.getElementById('qr-kategori').value;
+            const kelas = document.getElementById('qr-kelas').value;
+            const mapel = document.getElementById('qr-mapel').value;
+            const tgl = document.getElementById('qr-tgl').value;
+            const kode = `ASSISI-${targetPeran.toUpperCase()}-${kategori === 'Ujian' ? 'UJIAN' : 'HARIAN'}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            const sesi = { id: Date.now(), kode, targetPeran, kategori, kelas, mapel, tgl, pembuat: currentUser.name };
+            db.sesiQR.push(sesi);
+            saveData();
+            renderGeneratorQR();
+        }
+
+        function tampilkanQR(kode, caption) {
+            const container = document.getElementById('qrcode-container');
+            const capEl = document.getElementById('qr-caption');
+            const textEl = document.getElementById('qr-code-text');
+            if (!container) return;
+            container.innerHTML = '';
+            new QRCode(container, { text: kode, width: 200, height: 200 });
+            if (capEl) capEl.innerText = caption;
+            if (textEl) textEl.innerText = kode;
+        }
+
+        /* ================= GAMBAR 2: PRESENSI TERPISAH (SISWA, GURU, ADMIN) DENGAN SLIDE 1 & SLIDE 2 ================= */
+        function renderPresensiSiswa(activeSlide = 1, prefillQr = '', prefillTipe = 'Sehari-hari', prefillKelas = '') {
+            renderPresensiRoleTerpisah('Siswa', activeSlide, prefillQr, prefillTipe, prefillKelas);
+        }
+
+        function renderPresensiGuru(activeSlide = 1) {
+            renderPresensiRoleTerpisah('Guru', activeSlide);
+        }
+
+        function renderPresensiAdmin(activeSlide = 1) {
+            renderPresensiRoleTerpisah('Admin', activeSlide);
+        }
+
+        function gantiSlidePresensi(slideNum) {
+            const s1 = document.getElementById('presensi-slide-1');
+            const s2 = document.getElementById('presensi-slide-2');
+            const tab1 = document.getElementById('btn-tab-slide-1');
+            const tab2 = document.getElementById('btn-tab-slide-2');
+            if (!s1 || !s2) return;
+
+            if (slideNum === 1) {
+                s1.classList.remove('hidden-section');
+                s2.classList.add('hidden-section');
+                tab1.className = 'flex-1 py-2.5 px-4 rounded-lg font-bold text-xs bg-blue-600 text-white shadow';
+                tab2.className = 'flex-1 py-2.5 px-4 rounded-lg font-bold text-xs bg-slate-100 text-slate-600 hover:bg-slate-200';
+            } else {
+                s1.classList.add('hidden-section');
+                s2.classList.remove('hidden-section');
+                tab2.className = 'flex-1 py-2.5 px-4 rounded-lg font-bold text-xs bg-emerald-600 text-white shadow';
+                tab1.className = 'flex-1 py-2.5 px-4 rounded-lg font-bold text-xs bg-slate-100 text-slate-600 hover:bg-slate-200';
+            }
+        }
+
+        function renderPresensiRoleTerpisah(peran, activeSlide = 1, prefillQr = '', prefillTipe = 'Sehari-hari', prefillKelas = '') {
+            // Pisahkan riwayat khusus untuk peran tersebut (Siswa / Guru / Admin)
+            let myPresensi = db.presensi.filter(p => p.peran === peran && p.nama.toLowerCase() === currentUser.name.toLowerCase());
+            let qrKhususPeran = db.sesiQR.filter(q => q.targetPeran === peran || q.targetPeran === 'Semua');
+
+            let ruangLabel = peran === 'Siswa' ? 'Kelas' : (peran === 'Guru' ? 'Keterangan Tugas / Ruang Guru' : 'Bagian / Ruang Kantor Admin');
+            let ruangPlaceholder = peran === 'Guru' ? 'Contoh: Ruang Guru / Pengawas R.1' : 'Contoh: Ruang Tata Usaha / Ruang Admin';
+
+            let html = `
+                <div class="mb-6 flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase px-2.5 py-1 rounded ${peran === 'Siswa' ? 'bg-blue-100 text-blue-700' : (peran === 'Guru' ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-800')}">
+                            Ruang Presensi Khusus ${peran}
+                        </span>
+                        <h2 class="text-2xl font-bold text-slate-800 mt-1">Scan QR & Bukti Foto Kehadiran ${peran}</h2>
+                        <p class="text-sm text-slate-500">Terpisah khusus untuk akun <strong>${peran}</strong> dalam 2 Slide (Slide 1: Scan QR Code, Slide 2: Bukti Foto Kehadiran Wajib).</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- FORM 2 SLIDE TERPISAH -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-5">
+                        <!-- Navigasi Slide 1 & Slide 2 -->
+                        <div class="flex gap-2 p-1.5 bg-slate-100 rounded-xl">
+                            <button type="button" id="btn-tab-slide-1" onclick="gantiSlidePresensi(1)" class="flex-1 py-2.5 px-4 rounded-lg font-bold text-xs ${activeSlide === 1 ? 'bg-blue-600 text-white shadow' : 'bg-slate-100 text-slate-600'}">
+                                SLIDE 1: 1. Scan QR Code Kehadiran
+                            </button>
+                            <button type="button" id="btn-tab-slide-2" onclick="gantiSlidePresensi(2)" class="flex-1 py-2.5 px-4 rounded-lg font-bold text-xs ${activeSlide === 2 ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 text-slate-600'}">
+                                SLIDE 2: 2. Bukti Foto Kehadiran ${peran} (Wajib)
+                            </button>
+                        </div>
+
+                        <form onsubmit="savePresensiLengkap(event)" class="space-y-4">
+                            <input type="hidden" id="pres-peran-val" value="${peran}">
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-bold mb-1">Jenis Kehadiran ${peran}</label>
+                                    <select id="pres-tipe" class="w-full p-2.5 border rounded-lg font-semibold bg-slate-50" required>
+                                        <option value="Sehari-hari" ${prefillTipe === 'Sehari-hari' ? 'selected' : ''}>Kehadiran ${peran} Sehari-hari</option>
+                                        <option value="Ujian" ${prefillTipe === 'Ujian' ? 'selected' : ''}>Kehadiran ${peran} Ujian</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-1">${ruangLabel}</label>
+                                    ${peran === 'Siswa' 
+                                        ? `<select id="pres-kelas" class="w-full p-2.5 border rounded-lg">${listKelas.map(k => `<option value="${k}" ${k === prefillKelas ? 'selected' : ''}>${k}</option>`).join('')}</select>`
+                                        : `<input type="text" id="pres-kelas" class="w-full p-2.5 border rounded-lg" placeholder="${ruangPlaceholder}" required>`
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- ==================== SLIDE 1: 1. SCAN QR CODE KEHADIRAN ==================== -->
+                            <div id="presensi-slide-1" class="${activeSlide === 1 ? '' : 'hidden-section'} p-5 rounded-xl border-2 border-blue-200 bg-blue-50/50 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-base font-bold text-blue-900"><i class="fas fa-qrcode mr-1.5"></i>1. Scan QR Code Kehadiran</span>
+                                    <div class="space-x-1">
+                                        <button type="button" onclick="mulaiKameraQR('qr-reader', 'pres-qr-code', 'pres-qr-timestamp')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                                            <i class="fas fa-video mr-1"></i> Buka Kamera Scan QR
+                                        </button>
+                                        <button type="button" onclick="hentikanKameraQR('qr-reader-box', 'btn-stop-qr')" id="btn-stop-qr" class="hidden-section bg-slate-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg">
+                                            Tutup
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="qr-reader-box" class="hidden-section rounded-lg overflow-hidden border bg-black">
+                                    <div id="qr-reader" style="width: 100%;"></div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1">Hasil Scan QR (atau pilih kode QR khusus ${peran}):</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="pres-qr-code" value="${prefillQr}" class="flex-1 p-2.5 border rounded-lg font-mono text-sm bg-white uppercase" placeholder="Hasil scan QR muncul otomatis di sini..." required>
+                                        ${qrKhususPeran.length > 0 ? `
+                                            <select onchange="if(this.value) pilihQrManual(this.value)" class="p-2 border rounded-lg text-xs bg-white max-w-[170px]">
+                                                <option value="">-- QR ${peran} Aktif --</option>
+                                                ${qrKhususPeran.map(q => `<option value="${q.kode}">${q.kode}</option>`).join('')}
+                                            </select>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                <div class="bg-white border border-blue-200 p-3 rounded-lg">
+                                    <span class="text-[11px] font-bold text-blue-800 block"><i class="fas fa-clock mr-1"></i>Timestamp Pembacaan QR Real-Time:</span>
+                                    <span id="pres-qr-timestamp" class="text-xs font-semibold text-slate-700">${lastQrTimestamp || 'Belum ada QR terbaca'}</span>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                                    <button type="button" onclick="gantiSlidePresensi(2)" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl text-xs">
+                                        LANJUT KE SLIDE 2 (BUKTI FOTO) <i class="fas fa-arrow-right ml-1"></i>
+                                    </button>
+                                    <button type="submit" class="flex-1 bg-primary hover:bg-primaryDark text-white font-bold py-3 rounded-xl shadow text-xs">
+                                        <i class="fas fa-paper-plane mr-1"></i> SIMPAN PRESENSI QR & BUKTI FOTO
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ==================== SLIDE 2: 2. BUKTI FOTO KEHADIRAN (WAJIB) ==================== -->
+                            <div id="presensi-slide-2" class="${activeSlide === 2 ? '' : 'hidden-section'} p-5 rounded-xl border-2 border-emerald-200 bg-emerald-50/50 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-base font-bold text-emerald-900"><i class="fas fa-camera mr-1.5"></i>2. Bukti Foto Kehadiran ${peran} (Wajib)</span>
+                                    <button type="button" onclick="bukaKameraSelfie()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                                        <i class="fas fa-camera mr-1"></i> Ambil Foto Kamera
+                                    </button>
+                                </div>
+
+                                <!-- Live Camera Capture Box -->
+                                <div id="selfie-camera-box" class="hidden-section space-y-2 text-center bg-slate-900 p-3 rounded-lg">
+                                    <video id="selfie-video" autoplay playsinline class="w-full max-h-56 object-cover rounded mx-auto"></video>
+                                    <div class="flex justify-center gap-2">
+                                        <button type="button" onclick="jepretFotoSelfie()" class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-lg shadow">
+                                            <i class="fas fa-circle mr-1"></i> JEPRET BUKTI FOTO
+                                        </button>
+                                        <button type="button" onclick="tutupKameraSelfie()" class="bg-slate-600 text-white text-xs font-bold px-3 py-2 rounded-lg">
+                                            Batal
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="border-2 border-dashed border-emerald-300 p-5 text-center rounded-lg bg-white relative cursor-pointer hover:bg-emerald-50">
+                                    <i class="fas fa-cloud-upload-alt text-2xl text-emerald-600 mb-1"></i><br>
+                                    <span class="text-xs font-bold text-slate-700">Unggah File Bukti Foto Kehadiran ${peran}</span>
+                                    <input type="file" id="pres-foto" accept="image/*" capture="user" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewUpload(this, 'pres-preview')">
+                                </div>
+
+                                <div id="pres-preview" class="text-center hidden-section bg-white p-3 rounded-lg border">
+                                    <p class="text-xs text-emerald-700 font-bold mb-1"><i class="fas fa-check-circle"></i> Bukti Foto Kehadiran ${peran} Siap Dikirim</p>
+                                    <img id="pres-img-element" src="" class="mx-auto max-h-40 rounded border shadow-sm">
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                                    <button type="button" onclick="gantiSlidePresensi(1)" class="sm:w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 rounded-xl text-xs">
+                                        <i class="fas fa-arrow-left mr-1"></i> SLIDE 1
+                                    </button>
+                                    <button type="submit" class="flex-1 bg-primary hover:bg-primaryDark text-white font-bold py-3.5 rounded-xl shadow-md text-xs">
+                                        <i class="fas fa-paper-plane mr-2"></i> SIMPAN PRESENSI QR & BUKTI FOTO
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- RIWAYAT KEHADIRAN KHUSUS PERAN INI -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Riwayat Kehadiran ${peran} Saya (${myPresensi.length})</h3>
+                        <div class="space-y-3 max-h-[520px] overflow-y-auto pr-1">
+                            ${myPresensi.slice().reverse().map(p => `
+                                <div class="flex items-center justify-between p-3.5 border rounded-xl bg-slate-50 gap-3">
+                                    <div class="space-y-1">
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <span class="text-xs font-bold px-2 py-0.5 rounded ${p.tipe === 'Ujian' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}">
+                                                ${p.peran} • ${p.tipe}
+                                            </span>
+                                            <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-semibold">${p.kelas || '-'}</span>
+                                        </div>
+                                        <p class="text-sm font-bold text-slate-800">${p.timestampLengkap || (formatTglIndo(p.tgl) + ' • ' + p.jam + ' WIB')}</p>
+                                        <p class="text-xs font-mono text-slate-500">QR: ${p.qrCode || 'Terverifikasi'}</p>
+                                    </div>
+                                    <div class="text-center shrink-0">
+                                        <img src="${p.foto}" alt="Bukti Foto" class="w-16 h-16 object-cover rounded-lg border-2 border-white shadow cursor-pointer" onclick="viewImage('${p.foto}')">
+                                        <span class="text-[10px] text-blue-600 font-semibold block mt-0.5">Lihat Foto</span>
+                                    </div>
+                                </div>
+                            `).join('') || `<p class="text-sm text-slate-400 text-center py-8">Belum ada riwayat presensi QR & bukti foto untuk ${peran}.</p>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        function pilihQrManual(kode) {
+            const info = getDeviceDateTimeInfo();
+            lastQrTimestamp = info.fullTimestamp;
+            const inputEl = document.getElementById('pres-qr-code');
+            const tsEl = document.getElementById('pres-qr-timestamp');
+            if (inputEl) inputEl.value = kode;
+            if (tsEl) tsEl.innerText = lastQrTimestamp;
+        }
+
+        function mulaiKameraQR(readerId = 'qr-reader', targetInputId = 'pres-qr-code', targetTsId = 'pres-qr-timestamp', silentError = false) {
+            const box = document.getElementById('qr-reader-box');
+            const btnStop = document.getElementById('btn-stop-qr');
+            if (box) box.classList.remove('hidden-section');
+            if (btnStop) btnStop.classList.remove('hidden-section');
+
+            const readerEl = document.getElementById(readerId);
+            if (!readerEl) return;
+
+            stopMediaResources();
+
+            try {
+                html5QrScanner = new Html5Qrcode(readerId);
+                html5QrScanner.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 220, height: 220 } },
+                    (decodedText) => {
+                        const info = getDeviceDateTimeInfo();
+                        lastQrTimestamp = info.fullTimestamp;
+
+                        const inp = document.getElementById(targetInputId);
+                        const tsEl = document.getElementById(targetTsId);
+                        if (inp) inp.value = decodedText;
+                        if (tsEl) tsEl.innerText = lastQrTimestamp;
+
+                        const tipeSelect = document.getElementById('pres-tipe') || document.getElementById('dash-pres-tipe');
+                        if (tipeSelect) {
+                            if (decodedText.toUpperCase().includes('UJIAN')) tipeSelect.value = 'Ujian';
+                            else if (decodedText.toUpperCase().includes('HARIAN')) tipeSelect.value = 'Sehari-hari';
+                        }
+
+                        hentikanKameraQR();
+                        alert(`QR Code Terbaca: ${decodedText}\nWaktu Tercatat: ${lastQrTimestamp}`);
+                    },
+                    () => {}
+                ).catch(() => {
+                    if (!silentError) {
+                        alert("Kamera QR tidak dapat diakses di browser ini. Silakan pilih kode QR aktif atau ketik kode QR secara manual.");
+                    } else if (readerEl) {
+                        readerEl.innerHTML = `<div class="p-6 text-xs text-slate-300">Kamera tidak terdeteksi / izin kamera belum diberikan. Klik tombol <strong>Aktifkan Kamera Scan QR</strong> untuk mencoba kembali.</div>`;
+                    }
+                    hentikanKameraQR();
+                });
+            } catch (e) {
+                if (!silentError) alert("Pemindai kamera tidak tersedia.");
+                hentikanKameraQR();
+            }
+        }
+
+        function hentikanKameraQR() {
+            const box = document.getElementById('qr-reader-box');
+            const btnStop = document.getElementById('btn-stop-qr');
+            if (html5QrScanner) {
+                try { html5QrScanner.stop().then(() => html5QrScanner.clear()).catch(() => {}); } catch (e) {}
+                html5QrScanner = null;
+            }
+            if (box) box.classList.add('hidden-section');
+            if (btnStop) btnStop.classList.add('hidden-section');
+        }
+
+        function bukaKameraSelfie() {
+            const camBox = document.getElementById('selfie-camera-box');
+            const video = document.getElementById('selfie-video');
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert("Browser tidak mendukung akses kamera langsung. Silakan gunakan tombol unggah foto di bawahnya.");
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+                .then(stream => {
+                    activeCameraStream = stream;
+                    video.srcObject = stream;
+                    camBox.classList.remove('hidden-section');
+                })
+                .catch(() => {
+                    alert("Izin kamera ditolak atau tidak tersedia. Silakan unggah file foto bukti kehadiran.");
+                });
+        }
+
+        function jepretFotoSelfie() {
+            const video = document.getElementById('selfie-video');
+            if (!video) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = 360;
+            canvas.height = 270;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const info = getDeviceDateTimeInfo();
+            ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+            ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px sans-serif";
+            ctx.fillText(`${currentUser.name} (${currentUser.role}) • ${info.fullTimestamp}`, 8, canvas.height - 11);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            const imgEl = document.getElementById('pres-img-element');
+            imgEl.src = dataUrl;
+            imgEl.dataset.base64 = dataUrl;
+            document.getElementById('pres-preview').classList.remove('hidden-section');
+            tutupKameraSelfie();
+        }
+
+        function tutupKameraSelfie() {
+            if (activeCameraStream) {
+                activeCameraStream.getTracks().forEach(t => t.stop());
+                activeCameraStream = null;
+            }
+            const camBox = document.getElementById('selfie-camera-box');
+            if (camBox) camBox.classList.add('hidden-section');
+        }
+
+        function previewUpload(input, previewBoxId) {
+            let file = input.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let img = new Image();
+                img.onload = function() {
+                    let canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    let maxW = 360, maxH = 360;
+                    let width = img.width, height = img.height;
+                    if (width > height) { if (width > maxW) { height *= maxW / width; width = maxW; } }
+                    else { if (height > maxH) { width *= maxH / height; height = maxH; } }
+                    canvas.width = width; canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    let dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+                    document.getElementById('pres-img-element').src = dataUrl;
+                    document.getElementById('pres-img-element').dataset.base64 = dataUrl;
+                    document.getElementById(previewBoxId).classList.remove('hidden-section');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function savePresensiLengkap(e) {
+            e.preventDefault();
+            let qrCode = document.getElementById('pres-qr-code').value.trim().toUpperCase();
+            let base64Img = document.getElementById('pres-img-element').dataset.base64;
+            let peran = document.getElementById('pres-peran-val').value || currentUser.role;
+            let tipe = document.getElementById('pres-tipe').value;
+            let kelas = document.getElementById('pres-kelas').value;
+
+            if (!qrCode) {
+                gantiSlidePresensi(1);
+                alert("Harap scan atau masukkan Kode QR kehadiran pada Slide 1 terlebih dahulu!");
+                return;
+            }
+            if (!base64Img) {
+                gantiSlidePresensi(2);
+                alert("QR Code sudah tercatat! Sekarang harap ambil/unggah Bukti Foto Kehadiran (Wajib) pada Slide 2 lalu klik SIMPAN.");
+                return;
+            }
+
+            let info = getDeviceDateTimeInfo();
+            db.presensi.push({
+                id: Date.now(),
+                tgl: info.isoDate,
+                jam: info.jamStr,
+                timestampLengkap: lastQrTimestamp || info.fullTimestamp,
+                nama: currentUser.name,
+                peran: peran,
+                tipe: tipe,
+                kelas: kelas,
+                qrCode: qrCode,
+                foto: base64Img
+            });
+            lastQrTimestamp = null;
+            saveData();
+            alert(`Presensi ${tipe} (${peran}) beserta QR & Bukti Foto berhasil disimpan!`);
+            renderPresensiRoleTerpisah(peran, 1);
+        }
+
+        /* ================= REKAP PRESENSI & BUKTI FOTO (DIPISAHKAN PERANNYA) ================= */
+        function renderPresensi(filterPeran = 'Semua') {
+            const listFiltered = filterPeran === 'Semua' ? db.presensi : db.presensi.filter(p => p.peran === filterPeran);
+            let html = `
+                <div class="mb-6 flex flex-wrap justify-between items-center gap-3">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Rekap Kehadiran QR & Bukti Foto</h2>
+                        <p class="text-sm text-slate-500">Data presensi dipisahkan berdasarkan peran: Siswa, Guru, dan Admin.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="renderPresensi('Semua')" class="px-3 py-1.5 rounded-lg text-xs font-bold ${filterPeran === 'Semua' ? 'bg-slate-800 text-white' : 'bg-white border text-slate-600'}">Semua</button>
+                        <button onclick="renderPresensi('Siswa')" class="px-3 py-1.5 rounded-lg text-xs font-bold ${filterPeran === 'Siswa' ? 'bg-blue-600 text-white' : 'bg-white border text-slate-600'}">Khusus Siswa</button>
+                        <button onclick="renderPresensi('Guru')" class="px-3 py-1.5 rounded-lg text-xs font-bold ${filterPeran === 'Guru' ? 'bg-purple-600 text-white' : 'bg-white border text-slate-600'}">Khusus Guru</button>
+                        <button onclick="renderPresensi('Admin')" class="px-3 py-1.5 rounded-lg text-xs font-bold ${filterPeran === 'Admin' ? 'bg-amber-600 text-white' : 'bg-white border text-slate-600'}">Khusus Admin</button>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Timestamp Real-Time</th>
+                                <th>Nama Lengkap</th>
+                                <th>Peran & Kategori</th>
+                                <th>Kelas / Ruang</th>
+                                <th>Kode QR</th>
+                                <th>Bukti Foto Kehadiran</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>${listFiltered.slice().reverse().map(p => `
+                            <tr>
+                                <td><strong>${p.timestampLengkap || (formatTglIndo(p.tgl) + ' ' + p.jam + ' WIB')}</strong></td>
+                                <td class="font-bold text-slate-800">${p.nama}</td>
+                                <td>
+                                    <span class="px-2 py-0.5 rounded text-xs font-bold ${p.peran === 'Guru' ? 'bg-purple-100 text-purple-700' : (p.peran === 'Admin' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-700')}">${p.peran}</span>
+                                    <span class="px-2 py-0.5 rounded text-xs font-bold ${p.tipe === 'Ujian' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}">${p.tipe}</span>
+                                </td>
+                                <td>${p.kelas || '-'}</td>
+                                <td class="font-mono text-xs font-semibold text-slate-600">${p.qrCode || '-'}</td>
+                                <td>
+                                    <img src="${p.foto}" alt="Bukti Kehadiran" class="w-16 h-16 object-cover border-2 border-slate-200 rounded-lg cursor-pointer hover:scale-105 transition" onclick="viewImage('${p.foto}')">
+                                </td>
+                                <td><button onclick="hapusData('presensi', ${p.id}, () => renderPresensi('${filterPeran}'))" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold">HAPUS</button></td>
+                            </tr>
+                        `).join('') || `<tr><td colspan="7" class="text-center text-slate-400 py-6">Belum ada data presensi QR & bukti foto</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* ================= GAMBAR 8: UPLOAD TUGAS / NILAI TUGAS OLEH SISWA (BUKAN GURU) ================= */
+        function renderUploadTugasSiswa() {
+            const myUploads = db.nilaiTugas.filter(t => t.namaSiswa.toLowerCase() === currentUser.name.toLowerCase());
+            let html = `
+                <div class="mb-6">
+                    <span class="text-xs font-bold uppercase bg-blue-100 text-blue-700 px-2.5 py-1 rounded">Khusus Upload Siswa</span>
+                    <h2 class="text-2xl font-bold text-slate-800 mt-1">Upload Tugas / Nilai Tugas Siswa</h2>
+                    <p class="text-sm text-slate-500">Siswa mengupload hasil tugas beserta file lampiran untuk diperiksa oleh Guru.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <form onsubmit="saveUploadTugasSiswa(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="hidden" id="nt-id" value="">
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Tanggal Upload</label>
+                            <input type="date" id="nt-tgl" value="${new Date().toISOString().split('T')[0]}" class="w-full p-2.5 border rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Nama Siswa</label>
+                            <input type="text" id="nt-nama-siswa" value="${currentUser.name}" class="w-full p-2.5 border rounded-lg bg-slate-50 font-semibold" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Kelas</label>
+                            <select id="nt-kelas" class="w-full p-2.5 border rounded-lg" required>${genOptions(listKelas)}</select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Mata Pelajaran</label>
+                            <select id="nt-mapel" class="w-full p-2.5 border rounded-lg" required>${genOptions(listMapel)}</select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Judul Tugas</label>
+                            <input type="text" id="nt-judul" class="w-full p-2.5 border rounded-lg" placeholder="Contoh: Tugas 1 - Basis Data" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Guru Tujuan</label>
+                            <select id="nt-guru" class="w-full p-2.5 border rounded-lg" required>${genOptions(listGuru)}</select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold mb-1">Keterangan / Catatan Tugas Siswa</label>
+                            <input type="text" id="nt-ket" class="w-full p-2.5 border rounded-lg" placeholder="Tuliskan keterangan pengerjaan tugas...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Upload File Tugas (PDF/Word/Gambar)</label>
+                            <input type="file" id="nt-file" class="w-full p-2 border rounded-lg text-xs" required>
+                        </div>
+                        <div class="md:col-span-3 flex justify-end">
+                            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-lg shadow">
+                                <i class="fas fa-upload mr-2"></i> UPLOAD TUGAS SISWA
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama Siswa</th>
+                                <th>Kelas</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Judul Tugas</th>
+                                <th>File Tugas</th>
+                                <th>Keterangan</th>
+                                <th>Guru Tujuan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${myUploads.slice().reverse().map(t => `
+                                <tr>
+                                    <td>${formatTglIndo(t.tgl)}</td>
+                                    <td class="font-bold text-slate-800">${t.namaSiswa}</td>
+                                    <td>${t.kelas}</td>
+                                    <td>${t.mapel}</td>
+                                    <td class="font-semibold text-blue-700">${t.judul}</td>
+                                    <td>${t.fileName ? `<span class="text-xs text-blue-600 font-semibold"><i class="fas fa-paperclip"></i> ${t.fileName}</span>` : '-'}</td>
+                                    <td class="text-xs text-slate-600">${t.keterangan || '-'}</td>
+                                    <td class="text-xs">${t.guru}</td>
+                                    <td class="space-x-1">
+                                        <button onclick="hapusData('nilaiTugas', ${t.id}, renderUploadTugasSiswa)" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">HAPUS</button>
+                                    </td>
+                                </tr>
+                            `).join('') || `<tr><td colspan="9" class="text-center text-slate-400 py-6">Belum ada tugas yang Anda upload.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        function saveUploadTugasSiswa(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('nt-file');
+            const fileName = (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : 'Tugas_Siswa.pdf';
+
+            const data = {
+                id: Date.now(),
+                tgl: document.getElementById('nt-tgl').value,
+                namaSiswa: document.getElementById('nt-nama-siswa').value.trim(),
+                kelas: document.getElementById('nt-kelas').value,
+                mapel: document.getElementById('nt-mapel').value,
+                judul: document.getElementById('nt-judul').value.trim(),
+                keterangan: document.getElementById('nt-ket').value.trim(),
+                fileName: fileName,
+                guru: document.getElementById('nt-guru').value
+            };
+
+            db.nilaiTugas.push(data);
+            saveData();
+            alert("Tugas siswa berhasil diupload!");
+            renderUploadTugasSiswa();
+        }
+
+        /* Tampilan Rekap Tugas Upload Siswa untuk Guru & Admin (Tanpa Form Upload Guru) */
+        function renderRekapTugasSiswa() {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Daftar Tugas yang Diupload Siswa</h2>
+                    <p class="text-sm text-slate-500">Menampilkan seluruh file tugas yang telah diupload oleh Siswa.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama Siswa</th>
+                                <th>Kelas</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Judul Tugas</th>
+                                <th>File Lampiran Siswa</th>
+                                <th>Keterangan</th>
+                                <th>Guru Tujuan</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${db.nilaiTugas.slice().reverse().map(t => `
+                                <tr>
+                                    <td>${formatTglIndo(t.tgl)}</td>
+                                    <td class="font-bold text-slate-800">${t.namaSiswa}</td>
+                                    <td>${t.kelas}</td>
+                                    <td>${t.mapel}</td>
+                                    <td class="font-semibold text-blue-700">${t.judul}</td>
+                                    <td>${t.fileName ? `<button onclick="alert('Mengunduh file tugas siswa: ${t.fileName}')" class="bg-slate-100 border px-2 py-1 rounded text-xs text-blue-600 font-semibold"><i class="fas fa-download"></i> ${t.fileName}</button>` : '-'}</td>
+                                    <td class="text-xs text-slate-600">${t.keterangan || '-'}</td>
+                                    <td class="text-xs">${t.guru}</td>
+                                    <td><button onclick="hapusData('nilaiTugas', ${t.id}, renderRekapTugasSiswa)" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">HAPUS</button></td>
+                                </tr>
+                            `).join('') || `<tr><td colspan="9" class="text-center text-slate-400 py-6">Belum ada tugas yang diupload oleh Siswa.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* ================= GAMBAR 9: UPLOAD CATATAN OLEH SISWA (BUKAN GURU) ================= */
+        function renderUploadCatatanOlehSiswa() {
+            const myNotes = db.catatanSiswa.filter(c => c.namaSiswa.toLowerCase() === currentUser.name.toLowerCase());
+            let html = `
+                <div class="mb-6">
+                    <span class="text-xs font-bold uppercase bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded">Khusus Upload Siswa</span>
+                    <h2 class="text-2xl font-bold text-slate-800 mt-1">Upload Catatan Siswa</h2>
+                    <p class="text-sm text-slate-500">Siswa dapat mengupload ringkasan materi, catatan pelajaran, atau file catatan (PDF/Word/Gambar).</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <form onsubmit="saveUploadCatatanOlehSiswa(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Tanggal</label>
+                            <input type="date" id="cat-tgl" value="${new Date().toISOString().split('T')[0]}" class="w-full p-2.5 border rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Nama Siswa</label>
+                            <input type="text" id="cat-nama-siswa" value="${currentUser.name}" class="w-full p-2.5 border rounded-lg bg-slate-50 font-semibold" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Kelas</label>
+                            <select id="cat-kelas" class="w-full p-2.5 border rounded-lg" required>${genOptions(listKelas)}</select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Mata Pelajaran</label>
+                            <select id="cat-mapel" class="w-full p-2.5 border rounded-lg" required>${genOptions(listMapel)}</select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Judul Catatan</label>
+                            <input type="text" id="cat-judul" class="w-full p-2.5 border rounded-lg" placeholder="Contoh: Rangkuman Bab 2" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Upload File Catatan (PDF/Word/Gambar)</label>
+                            <input type="file" id="cat-file" class="w-full p-2 border rounded-lg text-xs">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-sm font-bold mb-1">Isi Catatan Siswa</label>
+                            <textarea id="cat-isi" rows="3" class="w-full p-2.5 border rounded-lg" placeholder="Tuliskan isi catatan pembelajaran Anda..." required></textarea>
+                        </div>
+                        <div class="md:col-span-3 flex justify-end">
+                            <button type="submit" class="bg-primary hover:bg-primaryDark text-white font-bold py-2.5 px-6 rounded-lg shadow">
+                                <i class="fas fa-paper-plane mr-2"></i> UPLOAD CATATAN SISWA
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama Siswa & Kelas</th>
+                                <th>Mapel & Judul</th>
+                                <th>Isi Catatan</th>
+                                <th>File Lampiran</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${myNotes.slice().reverse().map(c => `
+                                <tr>
+                                    <td>${formatTglIndo(c.tgl)}</td>
+                                    <td><strong>${c.namaSiswa}</strong><br><span class="text-xs text-slate-500">${c.kelas}</span></td>
+                                    <td><span class="text-xs font-bold text-primary block">${c.mapel}</span><strong>${c.judul}</strong></td>
+                                    <td class="max-w-xs text-xs text-slate-600">${c.isi}</td>
+                                    <td>${c.fileName ? `<span class="bg-slate-100 px-2 py-1 rounded text-xs border"><i class="fas fa-file-alt"></i> ${c.fileName}</span>` : '-'}</td>
+                                    <td><button onclick="hapusData('catatanSiswa', ${c.id}, renderUploadCatatanOlehSiswa)" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">HAPUS</button></td>
+                                </tr>
+                            `).join('') || `<tr><td colspan="6" class="text-center text-slate-400 py-6">Belum ada catatan yang Anda upload.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        function saveUploadCatatanOlehSiswa(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('cat-file');
+            const fileName = (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : '';
+
+            const data = {
+                id: Date.now(),
+                tgl: document.getElementById('cat-tgl').value,
+                namaSiswa: document.getElementById('cat-nama-siswa').value.trim(),
+                kelas: document.getElementById('cat-kelas').value,
+                mapel: document.getElementById('cat-mapel').value,
+                judul: document.getElementById('cat-judul').value.trim(),
+                isi: document.getElementById('cat-isi').value.trim(),
+                fileName: fileName
+            };
+
+            db.catatanSiswa.push(data);
+            saveData();
+            alert("Catatan siswa berhasil diupload!");
+            renderUploadCatatanOlehSiswa();
+        }
+
+        /* Tampilan Rekap Catatan Upload Siswa untuk Guru & Admin (Tanpa Form Upload Guru) */
+        function renderRekapCatatanSiswa() {
+            let html = `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Daftar Catatan yang Diupload Siswa</h2>
+                    <p class="text-sm text-slate-500">Menampilkan seluruh catatan pembelajaran dan file yang diupload oleh Siswa.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama Siswa & Kelas</th>
+                                <th>Mapel & Judul</th>
+                                <th>Isi Catatan</th>
+                                <th>File Lampiran</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${db.catatanSiswa.slice().reverse().map(c => `
+                                <tr>
+                                    <td>${formatTglIndo(c.tgl)}</td>
+                                    <td><strong>${c.namaSiswa}</strong><br><span class="text-xs text-slate-500">${c.kelas}</span></td>
+                                    <td><span class="text-xs font-bold text-primary block">${c.mapel}</span><strong>${c.judul}</strong></td>
+                                    <td class="max-w-xs text-xs text-slate-600">${c.isi}</td>
+                                    <td>${c.fileName ? `<button onclick="alert('Mengunduh file catatan siswa: ${c.fileName}')" class="bg-slate-100 px-2 py-1 rounded text-xs border text-blue-600 font-semibold"><i class="fas fa-download"></i> ${c.fileName}</button>` : '-'}</td>
+                                    <td><button onclick="hapusData('catatanSiswa', ${c.id}, renderRekapCatatanSiswa)" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">HAPUS</button></td>
+                                </tr>
+                            `).join('') || `<tr><td colspan="6" class="text-center text-slate-400 py-6">Belum ada catatan yang diupload oleh Siswa.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* ================= GAMBAR 3: JADWAL UJIAN (GURU, SISWA, ADMIN) ================= */
+        function renderJadwalUjian() {
+            let html = `
+                <div class="flex flex-wrap justify-between items-end gap-3 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">BUAT & KELOLA JADWAL UJIAN</h2>
+                        <p class="text-sm text-slate-500">Semua jadwal, durasi waktu (Jam, Menit, Detik), dan kode ujian otomatis tampil di akun Guru, Siswa, dan Admin.</p>
+                    </div>
+                    <button onclick="renderManajemenSoal()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-plus mr-1"></i> KELOLA SOAL UJIAN
+                    </button>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <form onsubmit="saveJadwalUjian(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="hidden" id="ju-id" value="">
+
+                        <!-- 1. HARI: Kotak kebawah SENIN - SABTU -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">1. Hari</label>
+                            <select id="ju-hari" class="w-full p-2.5 border rounded-lg font-semibold" required>
+                                ${genOptions(listHari)}
+                            </select>
+                        </div>
+
+                        <!-- 2. Tanggal Ujian: pilih sendiri tanggal bulan tahun (19-11-2026) -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">2. Tanggal Ujian (dd-mm-yyyy)</label>
+                            <input type="date" id="ju-tgl" value="2026-11-19" class="w-full p-2.5 border rounded-lg" required>
+                        </div>
+
+                        <!-- 3. Mata ujian: kotak kebawah -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">3. Mata Ujian</label>
+                            <select id="ju-mapel" class="w-full p-2.5 border rounded-lg" required>
+                                ${genOptions(listMapel)}
+                            </select>
+                        </div>
+
+                        <!-- 4. Kelas: kotak kebawah -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">4. Kelas</label>
+                            <select id="ju-kelas" class="w-full p-2.5 border rounded-lg" required>
+                                ${genOptions(listKelas)}
+                            </select>
+                        </div>
+
+                        <!-- 5. Durasi Waktu: jam menit detik kotak -->
+                        <div class="md:col-span-2 bg-red-50 p-3 rounded-lg border border-red-200">
+                            <label class="text-xs font-bold text-primary uppercase block mb-1.5">5. Durasi Waktu (Jam / Menit / Detik)</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <span class="text-[11px] font-semibold text-slate-600 block">Jam</span>
+                                    <select id="ju-durasi-jam" class="w-full p-2 border rounded bg-white font-bold" required>
+                                        ${genNumOptions(0, 12)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-semibold text-slate-600 block">Menit</span>
+                                    <select id="ju-durasi-menit" class="w-full p-2 border rounded bg-white font-bold" required>
+                                        ${genNumOptions(0, 59)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] font-semibold text-slate-600 block">Detik</span>
+                                    <select id="ju-durasi-detik" class="w-full p-2 border rounded bg-white font-bold" required>
+                                        ${genNumOptions(0, 59)}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Ruang: kotak kebawah 1-100 -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">6. Ruang (1-100)</label>
+                            <select id="ju-ruang" class="w-full p-2.5 border rounded-lg" required>${genNumOptions(1, 100)}</select>
+                        </div>
+
+                        <!-- 7. Sesi ujian: kotak kebawah 1-100 -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">7. Sesi Ujian (1-100)</label>
+                            <select id="ju-sesi" class="w-full p-2.5 border rounded-lg" required>${genNumOptions(1, 100)}</select>
+                        </div>
+
+                        <!-- 8. JUMLAH SISWA: kotak kebawah 1-100 -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">8. Jumlah Siswa (1-100)</label>
+                            <select id="ju-siswa" class="w-full p-2.5 border rounded-lg" required>${genNumOptions(1, 100)}</select>
+                        </div>
+
+                        <!-- 9. Pengawas ujian: kotak kebawah -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">9. Pengawas Ujian</label>
+                            <select id="ju-pengawas" class="w-full p-2.5 border rounded-lg" required>${genOptions(listGuru)}</select>
+                        </div>
+
+                        <!-- 10. Kode Ujian / Token: isi sendiri kotak -->
+                        <div class="bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                            <label class="block text-xs font-bold text-amber-800 uppercase mb-1">10. Kode Ujian / Token</label>
+                            <input type="text" id="ju-kode" class="w-full p-2 border rounded bg-white font-mono uppercase" placeholder="Isi Kode/Token sendiri..." required>
+                        </div>
+
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold p-3 rounded-lg shadow">
+                                <i class="fas fa-save mr-1"></i> SIMPAN JADWAL UJIAN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabel Jadwal Ujian + 11. Tombol Edit Hapus -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>Tanggal Ujian</th>
+                                <th>Mata Ujian</th>
+                                <th>Kelas</th>
+                                <th>Durasi Waktu</th>
+                                <th>Ruang</th>
+                                <th>Sesi Ujian</th>
+                                <th>Jumlah Siswa</th>
+                                <th>Pengawas Ujian</th>
+                                <th>Kode Ujian / Token</th>
+                                <th>Aksi (Edit / Hapus)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${db.jadwalUjian.map(j => {
+                            let jamDur = parseInt(j.durasiJam || 0);
+                            let mntDur = parseInt(j.durasiMenit || 0);
+                            let dtkDur = parseInt(j.durasiDetik || 0);
+                            return `
+                            <tr>
+                                <td class="font-bold text-slate-800">${j.hari || 'SENIN'}</td>
+                                <td>${formatTglIndo(j.tgl)}</td>
+                                <td class="font-bold text-primary">${j.mapel}</td>
+                                <td>${j.kelas}</td>
+                                <td><span class="font-bold text-emerald-700">${jamDur} Jam ${mntDur} Menit ${dtkDur} Detik</span></td>
+                                <td>Ruang ${j.ruang}</td>
+                                <td>Sesi ${j.sesi}</td>
+                                <td>${j.jmlSiswa} Siswa</td>
+                                <td>${j.pengawas}</td>
+                                <td><span class="text-xs font-mono font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">${j.kodeUjian || '-'}</span></td>
+                                <td class="space-x-1 whitespace-nowrap">
+                                    <button onclick="editJadwalUjian(${j.id})" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-xs font-bold">EDIT</button>
+                                    <button onclick="hapusData('jadwalUjian', ${j.id}, renderJadwalUjian)" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold">HAPUS</button>
+                                </td>
+                            </tr>
+                        `}).join('') || `<tr><td colspan="11" class="text-center text-slate-400 py-5">Data Jadwal Ujian Kosong</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+            const jamEl = document.getElementById('ju-durasi-jam');
+            if (jamEl && !document.getElementById('ju-id').value) jamEl.value = "1";
+        }
+
+        function saveJadwalUjian(e) {
+            e.preventDefault();
+            let id = document.getElementById('ju-id').value;
+            let dJam = parseInt(document.getElementById('ju-durasi-jam').value) || 0;
+            let dMenit = parseInt(document.getElementById('ju-durasi-menit').value) || 0;
+            let dDetik = parseInt(document.getElementById('ju-durasi-detik').value) || 0;
+
+            if (dJam === 0 && dMenit === 0 && dDetik === 0) {
+                alert("Durasi waktu ujian minimal harus lebih dari 0 detik!");
+                return;
+            }
+
+            let data = {
+                id: id ? parseInt(id) : Date.now(),
+                hari: document.getElementById('ju-hari').value,
+                tgl: document.getElementById('ju-tgl').value,
+                mapel: document.getElementById('ju-mapel').value,
+                kelas: document.getElementById('ju-kelas').value,
+                durasiJam: dJam,
+                durasiMenit: dMenit,
+                durasiDetik: dDetik,
+                ruang: document.getElementById('ju-ruang').value,
+                sesi: document.getElementById('ju-sesi').value,
+                jmlSiswa: document.getElementById('ju-siswa').value,
+                pengawas: document.getElementById('ju-pengawas').value,
+                kodeUjian: document.getElementById('ju-kode').value.trim().toUpperCase(),
+                lokasi: "SMK SWASTA ASSISI"
+            };
+            if (id) db.jadwalUjian = db.jadwalUjian.map(x => x.id == id ? data : x);
+            else db.jadwalUjian.push(data);
+            saveData(); renderJadwalUjian();
+        }
+
+        function editJadwalUjian(id) {
+            let data = db.jadwalUjian.find(x => x.id === id);
+            if(!data) return;
+            document.getElementById('ju-id').value = data.id;
+            document.getElementById('ju-hari').value = data.hari || 'SENIN';
+            document.getElementById('ju-tgl').value = data.tgl;
+            document.getElementById('ju-mapel').value = data.mapel;
+            document.getElementById('ju-kelas').value = data.kelas;
+            document.getElementById('ju-durasi-jam').value = data.durasiJam !== undefined ? data.durasiJam : 1;
+            document.getElementById('ju-durasi-menit').value = data.durasiMenit !== undefined ? data.durasiMenit : 0;
+            document.getElementById('ju-durasi-detik').value = data.durasiDetik !== undefined ? data.durasiDetik : 0;
+            document.getElementById('ju-ruang').value = data.ruang;
+            document.getElementById('ju-sesi').value = data.sesi;
+            document.getElementById('ju-siswa').value = data.jmlSiswa;
+            document.getElementById('ju-pengawas').value = data.pengawas;
+            document.getElementById('ju-kode').value = data.kodeUjian || '';
+        }
+
+        /* ================= GAMBAR 4 & 5: JADWAL PELAJARAN (GURU, SISWA, ADMIN) ================= */
+        function renderJadwalHarian() {
+            let html = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Manajemen Jadwal Pelajaran</h2>
+                <p class="text-sm text-slate-500 mb-6">Jadwal pelajaran yang disimpan/diedit oleh Guru & Admin otomatis tersinkronisasi ke akun Siswa.</p>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <form onsubmit="saveJadwalHarian(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input type="hidden" id="jh-id" value="">
+
+                        <!-- HARI: SENIN SELASA RABU KAMIS JUMAT SABTU -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Hari</label>
+                            <select id="jh-hari" class="w-full p-2.5 border rounded-lg font-semibold" required>${genOptions(listHari)}</select>
+                        </div>
+
+                        <!-- TANGGAL: 19-11-2026 -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Tanggal (dd-mm-yyyy)</label>
+                            <input type="date" id="jh-tgl" value="2026-11-19" class="w-full p-2.5 border rounded-lg" required>
+                        </div>
+
+                        <!-- JAM PELAJARAN: Jam menit detik -->
+                        <div class="md:col-span-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                            <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Jam Pelajaran (Jam : Menit : Detik)</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <select id="jh-jam" class="p-2 border rounded bg-white font-mono font-bold" required>${genNumOptions(0, 23, true)}</select>
+                                <select id="jh-menit" class="p-2 border rounded bg-white font-mono font-bold" required>${genNumOptions(0, 59, true)}</select>
+                                <select id="jh-detik" class="p-2 border rounded bg-white font-mono font-bold" required>${genNumOptions(0, 59, true)}</select>
+                            </div>
+                        </div>
+
+                        <!-- JAM LES MAPEL: 1-100 -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Jam Les Mapel (1-100)</label>
+                            <select id="jh-les" class="w-full p-2.5 border rounded-lg" required>${genNumOptions(1, 100)}</select>
+                        </div>
+
+                        <!-- MAPEL -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Mapel</label>
+                            <select id="jh-mapel" class="w-full p-2.5 border rounded-lg" required>${genOptions(listMapel)}</select>
+                        </div>
+
+                        <!-- KELAS -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Kelas</label>
+                            <select id="jh-kelas" class="w-full p-2.5 border rounded-lg" required>${genOptions(listKelas)}</select>
+                        </div>
+
+                        <!-- NAMA PENGAJAR -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Nama Pengajar</label>
+                            <select id="jh-pengajar" class="w-full p-2.5 border rounded-lg" required>${genOptions(listGuru)}</select>
+                        </div>
+
+                        <!-- JML SISWA: 1-100 -->
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Jml Siswa (1-100)</label>
+                            <select id="jh-siswa" class="w-full p-2.5 border rounded-lg" required>${genNumOptions(1, 100)}</select>
+                        </div>
+
+                        <div class="md:col-span-3 flex items-end justify-end">
+                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 px-6 rounded-lg shadow">
+                                <i class="fas fa-save mr-1"></i> SIMPAN JADWAL PELAJARAN
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabel sesuai contoh Gambar 5 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hari</th>
+                                <th>Tanggal</th>
+                                <th>Jam Pelajaran</th>
+                                <th>Jam Les Mapel</th>
+                                <th>Mapel</th>
+                                <th>Kelas</th>
+                                <th>Nama Pengajar</th>
+                                <th>Jml Siswa</th>
+                                <th>Hapus</th>
+                                <th>Edit</th>
+                            </tr>
+                        </thead>
+                        <tbody>${db.jadwalHarian.map(j => `
+                            <tr>
+                                <td class="font-bold text-slate-800">${j.hari || 'SENIN'}</td>
+                                <td>${formatTglIndo(j.tgl)}</td>
+                                <td class="font-mono font-bold text-primary">${j.jam}</td>
+                                <td>Les ke-${j.jamLes || 1}</td>
+                                <td class="font-bold">${j.mapel}</td>
+                                <td>${j.kelas}</td>
+                                <td>${j.pengajar}</td>
+                                <td>${j.jmlSiswa} Siswa</td>
+                                <td><button onclick="hapusData('jadwalHarian', ${j.id}, renderJadwalHarian)" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded text-xs font-bold">HAPUS</button></td>
+                                <td><button onclick="editJadwalHarian(${j.id})" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded text-xs font-bold">EDIT</button></td>
+                            </tr>
+                        `).join('') || `<tr><td colspan="10" class="text-center text-slate-400 py-5">Data Jadwal Pelajaran Kosong</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+            if (!document.getElementById('jh-id').value) {
+                document.getElementById('jh-jam').value = "8";
+            }
+        }
+
+        function saveJadwalHarian(e) {
+            e.preventDefault();
+            let id = document.getElementById('jh-id').value;
+            let jJam = String(document.getElementById('jh-jam').value).padStart(2, '0');
+            let jMenit = String(document.getElementById('jh-menit').value).padStart(2, '0');
+            let jDetik = String(document.getElementById('jh-detik').value).padStart(2, '0');
+
+            let data = {
+                id: id ? parseInt(id) : Date.now(),
+                hari: document.getElementById('jh-hari').value,
+                tgl: document.getElementById('jh-tgl').value,
+                jam: `${jJam}:${jMenit}:${jDetik}`,
+                jamLes: document.getElementById('jh-les').value,
+                mapel: document.getElementById('jh-mapel').value,
+                kelas: document.getElementById('jh-kelas').value,
+                pengajar: document.getElementById('jh-pengajar').value,
+                jmlSiswa: document.getElementById('jh-siswa').value,
+                lokasi: "SMK SWASTA ASSISI"
+            };
+            if (id) db.jadwalHarian = db.jadwalHarian.map(x => x.id == id ? data : x);
+            else db.jadwalHarian.push(data);
+            saveData(); renderJadwalHarian();
+        }
+
+        function editJadwalHarian(id) {
+            let data = db.jadwalHarian.find(x => x.id === id);
+            if (!data) return;
+            document.getElementById('jh-id').value = data.id;
+            document.getElementById('jh-hari').value = data.hari || 'SENIN';
+            document.getElementById('jh-tgl').value = data.tgl;
+            const timeParts = (data.jam || '08:00:00').split(':');
+            document.getElementById('jh-jam').value = parseInt(timeParts[0]) || 0;
+            document.getElementById('jh-menit').value = parseInt(timeParts[1]) || 0;
+            document.getElementById('jh-detik').value = parseInt(timeParts[2]) || 0;
+            document.getElementById('jh-les').value = data.jamLes || 1;
+            document.getElementById('jh-mapel').value = data.mapel;
+            document.getElementById('jh-kelas').value = data.kelas;
+            document.getElementById('jh-pengajar').value = data.pengajar;
+            document.getElementById('jh-siswa').value = data.jmlSiswa;
+        }
+
+        /* ================= MENU SISWA: JADWAL UJIAN & JADWAL PELAJARAN (GAMBAR 3, 4, 5) ================= */
+        function renderJadwalSiswa() {
+            let html = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Jadwal Ujian & Jadwal Pelajaran Saya</h2>
+                <p class="text-sm text-slate-500 mb-6">Data jadwal di bawah ini diperbarui secara otomatis oleh Admin dan Guru.</p>
+
+                <!-- Tabel Jadwal Ujian (Sesuai Gambar 3) -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                    <div class="bg-primary text-white px-5 py-3 font-bold flex items-center gap-2">
+                        <i class="fas fa-file-signature"></i> JADWAL UJIAN RESMI
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hari</th>
+                                    <th>Tanggal Ujian</th>
+                                    <th>Mata Ujian</th>
+                                    <th>Kelas</th>
+                                    <th>Durasi Waktu</th>
+                                    <th>Ruang</th>
+                                    <th>Sesi Ujian</th>
+                                    <th>Jumlah Siswa</th>
+                                    <th>Pengawas Ujian</th>
+                                    <th>Kode Ujian / Token</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${db.jadwalUjian.map(j => `
+                                    <tr>
+                                        <td class="font-bold">${j.hari || 'SENIN'}</td>
+                                        <td>${formatTglIndo(j.tgl)}</td>
+                                        <td class="font-bold text-primary">${j.mapel}</td>
+                                        <td>${j.kelas}</td>
+                                        <td><span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-xs font-bold">${j.durasiJam || 0} Jam ${j.durasiMenit || 0} Menit ${j.durasiDetik || 0} Detik</span></td>
+                                        <td>Ruang ${j.ruang}</td>
+                                        <td>Sesi ${j.sesi}</td>
+                                        <td>${j.jmlSiswa} Siswa</td>
+                                        <td>${j.pengawas}</td>
+                                        <td><span class="font-mono font-bold bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs">${j.kodeUjian || 'UMUM'}</span></td>
+                                    </tr>
+                                `).join('') || `<tr><td colspan="10" class="text-center text-slate-400 py-6">Belum ada jadwal ujian yang diterbitkan oleh Admin/Guru.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabel Jadwal Pelajaran (Sesuai Gambar 4 & 5) -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-800 text-white px-5 py-3 font-bold flex items-center gap-2">
+                        <i class="fas fa-calendar-day"></i> JADWAL PELAJARAN
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hari</th>
+                                    <th>Tanggal</th>
+                                    <th>Jam Pelajaran</th>
+                                    <th>Jam Les Mapel</th>
+                                    <th>Mapel</th>
+                                    <th>Kelas</th>
+                                    <th>Nama Pengajar</th>
+                                    <th>Jml Siswa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${db.jadwalHarian.map(j => `
+                                    <tr>
+                                        <td class="font-bold">${j.hari || 'SENIN'}</td>
+                                        <td>${formatTglIndo(j.tgl)}</td>
+                                        <td class="font-mono font-bold text-blue-600">${j.jam}</td>
+                                        <td>Les ke-${j.jamLes || 1}</td>
+                                        <td class="font-bold">${j.mapel}</td>
+                                        <td>${j.kelas}</td>
+                                        <td>${j.pengajar}</td>
+                                        <td>${j.jmlSiswa} Siswa</td>
+                                    </tr>
+                                `).join('') || `<tr><td colspan="8" class="text-center text-slate-400 py-6">Belum ada jadwal pelajaran yang diterbitkan.</td></tr>`}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* ================= FITUR 5: MANAJEMEN MATERI ================= */
+        function renderMateri() {
+            let html = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Manajemen Materi Pelajaran</h2>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <form onsubmit="saveMateri(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="hidden" id="mat-id" value="">
+                        <div><label class="text-sm font-bold">Tanggal</label><input type="date" id="mat-tgl" class="w-full p-2 border rounded" required></div>
+                        <div><label class="text-sm font-bold">Judul Materi</label><input type="text" id="mat-judul" class="w-full p-2 border rounded" required></div>
+                        <div><label class="text-sm font-bold">Mata Pelajaran</label><select id="mat-mapel" class="w-full p-2 border rounded" required>${genOptions(listMapel)}</select></div>
+                        <div><label class="text-sm font-bold">Kategori Kelas</label><select id="mat-kelas" class="w-full p-2 border rounded" required>${genOptions(listKelas)}</select></div>
+                        <div><label class="text-sm font-bold">Nama Guru</label><select id="mat-guru" class="w-full p-2 border rounded" required>${genOptions(listGuru)}</select></div>
+                        <div>
+                            <label class="text-sm font-bold">Unggah File (Word/Excel/PPT/Gambar/Video)</label>
+                            <input type="file" id="mat-file" class="w-full p-2 border rounded text-sm">
+                        </div>
+                        <div class="col-span-1 md:col-span-2 flex justify-end">
+                            <button type="submit" class="bg-emerald-500 text-white font-bold py-2 px-6 rounded">SIMPAN MATERI</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table>
+                        <thead><tr><th>Tgl</th><th>Judul</th><th>Mapel / Kelas</th><th>File Data</th><th>Guru</th><th>Aksi</th></tr></thead>
+                        <tbody>${db.materi.map(m => `
+                            <tr>
+                                <td>${formatTglIndo(m.tgl)}</td><td class="font-bold text-primary">${m.judul}</td><td>${m.mapel}<br><span class="text-xs">${m.kelas}</span></td>
+                                <td><span class="bg-slate-100 px-2 py-1 rounded text-xs border"><i class="fas fa-file"></i> ${m.fileName}</span></td>
+                                <td>${m.guru}</td>
+                                <td class="space-x-1">
+                                    <button onclick="editMateri(${m.id})" class="bg-amber-500 text-white px-2 py-1 rounded text-xs">EDIT</button>
+                                    <button onclick="hapusData('materi', ${m.id}, renderMateri)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">HAPUS</button>
+                                </td>
+                            </tr>
+                        `).join('') || `<tr><td colspan="6" class="text-center py-4">Belum ada materi</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        function saveMateri(e) {
+            e.preventDefault();
+            let id = document.getElementById('mat-id').value;
+            let fileInput = document.getElementById('mat-file');
+            let existing = id ? db.materi.find(x => x.id == id) : null;
+            let fileName = (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : (existing ? existing.fileName : "Document.pdf");
+
+            let data = {
+                id: id ? parseInt(id) : Date.now(),
+                tgl: document.getElementById('mat-tgl').value,
+                judul: document.getElementById('mat-judul').value,
+                mapel: document.getElementById('mat-mapel').value,
+                kelas: document.getElementById('mat-kelas').value,
+                guru: document.getElementById('mat-guru').value,
+                fileName: fileName
+            };
+            if (id) db.materi = db.materi.map(x => x.id == id ? data : x);
+            else db.materi.push(data);
+            saveData(); renderMateri();
+        }
+
+        function editMateri(id) {
+            let m = db.materi.find(x => x.id === id);
+            if (!m) return;
+            document.getElementById('mat-id').value = m.id;
+            document.getElementById('mat-tgl').value = m.tgl;
+            document.getElementById('mat-judul').value = m.judul;
+            document.getElementById('mat-mapel').value = m.mapel;
+            document.getElementById('mat-kelas').value = m.kelas;
+            document.getElementById('mat-guru').value = m.guru;
+        }
+
+        function renderMateriSiswa() {
+            let html = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Materi Pembelajaran Saya</h2>
+                <p class="text-sm text-slate-500 mb-6">Semua modul dan materi di bawah ini diunggah/diedit oleh Guru & Admin.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    ${db.materi.map(m => `
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition">
+                            <div class="text-xs text-slate-400 mb-2">${formatTglIndo(m.tgl)}</div>
+                            <h3 class="font-bold text-lg text-primary mb-1">${m.judul}</h3>
+                            <p class="text-sm font-semibold text-slate-600">${m.mapel} - ${m.kelas}</p>
+                            <p class="text-xs text-slate-500 mt-2"><i class="fas fa-chalkboard-teacher"></i> ${m.guru}</p>
+                            <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+                                <span class="text-xs truncate max-w-[150px] text-blue-500"><i class="fas fa-file"></i> ${m.fileName}</span>
+                                <button class="bg-slate-800 text-white px-3 py-1 rounded text-xs" onclick="alert('Mengunduh file: ${m.fileName}')">UNDUH</button>
+                            </div>
+                        </div>
+                    `).join('') || `<p class="text-slate-500 col-span-3">Belum ada materi yang dibagikan guru.</p>`}
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* ================= GAMBAR 6 & 7: SOAL UJIAN (GURU & ADMIN) ================= */
+        function renderManajemenSoal() {
+            let html = `
+                <div class="flex flex-wrap justify-between items-end gap-3 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Buat & Kelola Soal Ujian</h2>
+                        <p class="text-sm text-slate-500">Format Soal Pilihan Berganda (1-100) & Soal Pilihan Essay (1-100) lengkap dengan Mata Pelajaran, Hari/Tanggal, Kelas, dan Kompetensi Keahlian (AK, RPL, TB).</p>
+                    </div>
+                    <button onclick="renderJadwalUjian()" class="bg-primary hover:bg-primaryDark text-white text-xs font-bold px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-calendar-check mr-1"></i> ATUR JADWAL & TOKEN UJIAN
+                    </button>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <form onsubmit="saveSoal(event)" class="space-y-4">
+                        <input type="hidden" id="soal-id" value="">
+
+                        <!-- Header Identitas Soal sesuai Gambar 7 -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Mata Pelajaran</label>
+                                <select id="soal-mapel" class="w-full p-2.5 border rounded-lg bg-white" required>${genOptions(listMapel)}</select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Hari</label>
+                                <select id="soal-hari" class="w-full p-2.5 border rounded-lg bg-white" required>${genOptions(listHari)}</select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Tanggal</label>
+                                <input type="date" id="soal-tgl" value="2026-11-19" class="w-full p-2.5 border rounded-lg bg-white" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Kelas</label>
+                                <select id="soal-kelas" class="w-full p-2.5 border rounded-lg bg-white" required>${genOptions(listKelas)}</select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Kompetensi Keahlian (AK / RPL / TB)</label>
+                                <select id="soal-kompetensi" class="w-full p-2.5 border rounded-lg bg-white font-bold text-primary" required>${genOptions(listKompetensi)}</select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase mb-1">Nomor Soal (1-100)</label>
+                                <select id="soal-nomor" class="w-full p-2.5 border rounded-lg bg-white font-bold" required>${genNumOptions(1, 100)}</select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Jenis Soal Ujian</label>
+                            <select id="soal-tipe" class="w-full p-2.5 border rounded-lg font-bold" required onchange="toggleTipeSoal(this.value)">
+                                <option value="PG">SOAL PILIHAN BERGANDA (A - E)</option>
+                                <option value="Essay">SOAL PILIHAN ESSAY</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-1">Pertanyaan Soal</label>
+                            <textarea id="soal-tanya" class="w-full p-2.5 border rounded-lg h-20" placeholder="Tuliskan pertanyaan soal di sini..." required></textarea>
+                        </div>
+                        
+                        <!-- Bagian Soal Pilihan Berganda sesuai Gambar 7 -->
+                        <div id="soal-opsi-group" class="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 rounded-xl border border-blue-200 bg-blue-50/40">
+                            <div><label class="text-xs font-bold">Pilihan A</label><input type="text" id="soal-a" class="w-full p-2 border rounded bg-white text-sm"></div>
+                            <div><label class="text-xs font-bold">Pilihan B</label><input type="text" id="soal-b" class="w-full p-2 border rounded bg-white text-sm"></div>
+                            <div><label class="text-xs font-bold">Pilihan C</label><input type="text" id="soal-c" class="w-full p-2 border rounded bg-white text-sm"></div>
+                            <div><label class="text-xs font-bold">Pilihan D</label><input type="text" id="soal-d" class="w-full p-2 border rounded bg-white text-sm"></div>
+                            <div><label class="text-xs font-bold">Pilihan E</label><input type="text" id="soal-e" class="w-full p-2 border rounded bg-white text-sm"></div>
+                            <div>
+                                <label class="text-xs font-bold text-emerald-700">Kunci Jawaban Benar (A/B/C/D/E)</label>
+                                <select id="soal-kunci-pg" class="w-full p-2 border rounded text-sm bg-emerald-50 font-bold">
+                                    <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Soal Pilihan Essay sesuai Gambar 7 -->
+                        <div id="soal-kunci-essay-group" class="hidden-section space-y-3 p-4 rounded-xl border border-emerald-200 bg-emerald-50/40">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Contoh / Panduan Jawaban Kita (Siswa)</label>
+                                <textarea id="soal-panduan-essay" class="w-full p-2 border rounded h-16 bg-white" placeholder="Panduan/format jawaban siswa..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-emerald-700 mb-1">Kunci Jawaban Benar (Essay)</label>
+                                <textarea id="soal-kunci-essay" class="w-full p-2 border rounded h-20 bg-emerald-50" placeholder="Tuliskan kunci jawaban essay..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="bg-primary hover:bg-primaryDark text-white font-bold px-6 py-3 rounded-lg shadow">
+                            <i class="fas fa-save mr-1"></i> SIMPAN SOAL UJIAN
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Daftar Soal Tersimpan sesuai format Gambar 7 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden p-5">
+                    <h3 class="font-bold text-lg mb-4">Daftar Soal Ujian Tersimpan (${db.soal.length})</h3>
+                    <div class="space-y-4">
+                        ${db.soal.map((s) => `
+                            <div class="border-2 border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                                <div class="flex flex-wrap justify-between items-start gap-3 border-b border-slate-200 pb-2 mb-3">
+                                    <div class="text-xs space-y-0.5">
+                                        <p><strong>MATA PELAJARAN:</strong> <span class="text-primary font-bold">${s.mapel}</span> | <strong>HARI / TANGGAL:</strong> ${s.hari || 'SENIN'}, ${formatTglIndo(s.tgl)}</p>
+                                        <p><strong>KELAS:</strong> ${s.kelas || '-'} | <strong>KOMPETENSI KEAHLIAN:</strong> <span class="bg-slate-800 text-white px-2 py-0.5 rounded font-bold">${s.kompetensi || 'RPL'}</span></p>
+                                    </div>
+                                    <div class="space-x-2 shrink-0">
+                                        <button onclick="editSoal(${s.id})" class="bg-amber-500 text-white px-3 py-1 rounded text-xs font-bold">EDIT</button>
+                                        <button onclick="hapusData('soal', ${s.id}, renderManajemenSoal)" class="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold">HAPUS</button>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs font-bold uppercase text-blue-700 mb-1">${s.tipe === 'PG' ? 'SOAL PILIHAN BERGANDA' : 'SOAL PILIHAN ESSAY'} — Soal No. ${s.nomor || 1}</p>
+                                <p class="font-bold text-sm text-slate-800 mb-2">${s.nomor || 1}. ${s.tanya}</p>
+
+                                ${s.tipe === 'PG' && s.opsi ? `
+                                    <ul class="text-xs space-y-1 ml-4 mb-2 text-slate-700">
+                                        <li>A. ${s.opsi.A}</li>
+                                        <li>B. ${s.opsi.B}</li>
+                                        <li>C. ${s.opsi.C}</li>
+                                        <li>D. ${s.opsi.D}</li>
+                                        <li>E. ${s.opsi.E}</li>
+                                    </ul>
+                                    <p class="text-xs font-bold text-emerald-700">Kunci jawaban benar: ${s.kunci}. ${s.opsi[s.kunci] || ''}</p>
+                                ` : `
+                                    <p class="text-xs text-slate-600 mb-1"><strong>Panduan Jawaban Kita:</strong> ${s.panduanEssay || '-'}</p>
+                                    <p class="text-xs font-bold text-emerald-700">Kunci jawaban: ${s.kunci}</p>
+                                `}
+                            </div>
+                        `).join('') || '<p class="text-xs text-slate-500">Belum ada soal ujian yang dibuat.</p>'}
+                    </div>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        function toggleTipeSoal(val) {
+            document.getElementById('soal-opsi-group').classList.toggle('hidden-section', val === 'Essay');
+            document.getElementById('soal-kunci-essay-group').classList.toggle('hidden-section', val === 'PG');
+        }
+
+        function saveSoal(e) {
+            e.preventDefault();
+            let id = document.getElementById('soal-id').value;
+            let tipe = document.getElementById('soal-tipe').value;
+            let data = {
+                id: id ? parseInt(id) : Date.now(),
+                mapel: document.getElementById('soal-mapel').value,
+                hari: document.getElementById('soal-hari').value,
+                tgl: document.getElementById('soal-tgl').value,
+                kelas: document.getElementById('soal-kelas').value,
+                kompetensi: document.getElementById('soal-kompetensi').value,
+                nomor: document.getElementById('soal-nomor').value,
+                tipe: tipe,
+                tanya: document.getElementById('soal-tanya').value,
+                opsi: tipe === 'PG' ? {
+                    A: document.getElementById('soal-a').value, B: document.getElementById('soal-b').value,
+                    C: document.getElementById('soal-c').value, D: document.getElementById('soal-d').value,
+                    E: document.getElementById('soal-e').value
+                } : null,
+                panduanEssay: tipe === 'Essay' ? document.getElementById('soal-panduan-essay').value : '',
+                kunci: tipe === 'PG' ? document.getElementById('soal-kunci-pg').value : document.getElementById('soal-kunci-essay').value
+            };
+            if (id) db.soal = db.soal.map(x => x.id == id ? data : x);
+            else db.soal.push(data);
+            saveData(); renderManajemenSoal();
+        }
+
+        function editSoal(id) {
+            let s = db.soal.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('soal-id').value = s.id;
+            document.getElementById('soal-mapel').value = s.mapel;
+            document.getElementById('soal-hari').value = s.hari || 'SENIN';
+            document.getElementById('soal-tgl').value = s.tgl || '2026-11-19';
+            document.getElementById('soal-kelas').value = s.kelas || '10 RPL';
+            document.getElementById('soal-kompetensi').value = s.kompetensi || 'RPL';
+            document.getElementById('soal-nomor').value = s.nomor || 1;
+            document.getElementById('soal-tipe').value = s.tipe;
+            toggleTipeSoal(s.tipe);
+            document.getElementById('soal-tanya').value = s.tanya;
+            if (s.tipe === 'PG' && s.opsi) {
+                document.getElementById('soal-a').value = s.opsi.A || '';
+                document.getElementById('soal-b').value = s.opsi.B || '';
+                document.getElementById('soal-c').value = s.opsi.C || '';
+                document.getElementById('soal-d').value = s.opsi.D || '';
+                document.getElementById('soal-e').value = s.opsi.E || '';
+                document.getElementById('soal-kunci-pg').value = s.kunci;
+            } else {
+                document.getElementById('soal-panduan-essay').value = s.panduanEssay || '';
+                document.getElementById('soal-kunci-essay').value = s.kunci;
+            }
+        }
+
+        /* ================= PORTAL UJIAN SISWA (MENGIKUTI DURASI JAM, MENIT, DETIK & FORMAT GAMBAR 7) ================= */
+        function renderUjianSiswa() {
+            let html = `
+                <div class="max-w-3xl mx-auto mt-6">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-shield-alt text-5xl text-primary mb-3"></i>
+                        <h2 class="text-3xl font-bold text-slate-800">Portal Ujian CBT</h2>
+                        <p class="text-slate-600 text-sm mt-1">Pilih jadwal ujian yang telah ditetapkan Admin/Guru. Durasi waktu (Jam, Menit, Detik) otomatis mengikuti pengaturan jadwal.</p>
+                    </div>
+
+                    ${db.jadwalUjian.length > 0 ? `
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Pilih Jadwal Mata Ujian</label>
+                                <select id="pilih-jadwal-ujian" class="w-full p-3 border rounded-lg font-semibold" onchange="updateInfoJadwalUjian()">
+                                    ${db.jadwalUjian.map(j => `
+                                        <option value="${j.id}">
+                                            ${j.mapel} (${j.kelas}) — ${j.hari || ''}, ${formatTglIndo(j.tgl)} | Durasi: ${j.durasiJam || 0} Jam ${j.durasiMenit || 0} Menit ${j.durasiDetik || 0} Detik
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
+
+                            <div id="box-info-ujian" class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm space-y-1"></div>
+
+                            <div>
+                                <label class="block text-sm font-bold mb-1">Masukkan Kode Ujian / Token</label>
+                                <input type="text" id="input-token-ujian" class="w-full p-3 border rounded-lg font-mono uppercase" placeholder="Masukkan kode dari pengawas/jadwal...">
+                            </div>
+
+                            <button onclick="mulaiUjianDariJadwal()" class="w-full bg-primary hover:bg-primaryDark text-white font-bold text-lg py-4 rounded-xl shadow-lg transition">
+                                <i class="fas fa-play-circle mr-2"></i> MULAI UJIAN SEKARANG
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
+                            <p class="text-slate-500 font-semibold mb-2">Belum ada Jadwal Ujian yang dibuat oleh Admin atau Guru.</p>
+                            <p class="text-xs text-slate-400">Silakan hubungi Admin/Guru untuk menerbitkan jadwal ujian.</p>
+                        </div>
+                    `}
+                </div>
+            `;
+            setContent(html);
+            if (db.jadwalUjian.length > 0) updateInfoJadwalUjian();
+        }
+
+        function updateInfoJadwalUjian() {
+            const select = document.getElementById('pilih-jadwal-ujian');
+            const box = document.getElementById('box-info-ujian');
+            if (!select || !box) return;
+            const jadwal = db.jadwalUjian.find(j => j.id == select.value);
+            if (!jadwal) return;
+
+            const jmlSoalMapel = db.soal.filter(s => s.mapel === jadwal.mapel).length;
+            const totalSoalTersedia = jmlSoalMapel > 0 ? jmlSoalMapel : db.soal.length;
+
+            box.innerHTML = `
+                <div class="flex justify-between"><span class="text-slate-500">Hari / Tanggal Ujian:</span><strong>${jadwal.hari || ''}, ${formatTglIndo(jadwal.tgl)}</strong></div>
+                <div class="flex justify-between"><span class="text-slate-500">Mata Ujian & Kelas:</span><strong>${jadwal.mapel} (${jadwal.kelas})</strong></div>
+                <div class="flex justify-between"><span class="text-slate-500">Pengawas Ujian:</span><strong>${jadwal.pengawas}</strong></div>
+                <div class="flex justify-between"><span class="text-slate-500">Durasi Waktu:</span><strong class="text-primary">${jadwal.durasiJam || 0} Jam ${jadwal.durasiMenit || 0} Menit ${jadwal.durasiDetik || 0} Detik</strong></div>
+                <div class="flex justify-between"><span class="text-slate-500">Jumlah Soal Siap:</span><strong>${totalSoalTersedia} Soal</strong></div>
+            `;
+        }
+
+        function mulaiUjianDariJadwal() {
+            const select = document.getElementById('pilih-jadwal-ujian');
+            const jadwal = db.jadwalUjian.find(j => j.id == select.value);
+            if (!jadwal) return;
+
+            const inputKode = document.getElementById('input-token-ujian').value.trim().toUpperCase();
+            if (jadwal.kodeUjian && inputKode !== jadwal.kodeUjian) {
+                alert(`Kode Ujian salah! Periksa kembali kode ujian pada jadwal (Petunjuk: ${jadwal.kodeUjian}).`);
+                return;
+            }
+
+            let daftarSoal = db.soal.filter(s => s.mapel === jadwal.mapel);
+            if (daftarSoal.length === 0) daftarSoal = db.soal;
+
+            if (daftarSoal.length === 0) {
+                alert("Belum ada soal yang dibuat oleh Guru/Admin!");
+                return;
+            }
+
+            const durasiJam = parseInt(jadwal.durasiJam || 0);
+            const durasiMenit = parseInt(jadwal.durasiMenit || 0);
+            const durasiDetik = parseInt(jadwal.durasiDetik || 0);
+            let sisaDetik = (durasiJam * 3600) + (durasiMenit * 60) + durasiDetik;
+            if (sisaDetik <= 0) sisaDetik = 3600;
+
+            activeExamSubject = jadwal.mapel;
+            isExamActive = true;
+            document.getElementById('sidebar').classList.add('hidden-section');
+            document.getElementById('topbar-warning').classList.remove('hidden-section');
+            document.getElementById('exam-active-mapel').innerText = jadwal.mapel;
+            startLiveClock();
+
+            window.currentExamQuestions = daftarSoal;
+            window.currentExamSchedule = jadwal;
+
+            let soalPG = daftarSoal.filter(s => s.tipe === 'PG');
+            let soalEssay = daftarSoal.filter(s => s.tipe === 'Essay');
+
+            let renderKartuSoal = (s, idx) => {
+                let konten = '';
+                if (s.tipe === 'PG') {
+                    for (const [key, val] of Object.entries(s.opsi)) {
+                        konten += `<label class="block p-3 border rounded-lg mb-2 cursor-pointer hover:bg-slate-50"><input type="radio" name="ans_${s.id}" value="${key}" class="mr-2"> <strong>${key}.</strong> ${val}</label>`;
+                    }
+                } else {
+                    konten = `
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Jawaban Kita:</label>
+                        <textarea name="ans_${s.id}" class="w-full h-32 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-primary" placeholder="Tuliskan jawaban essay Anda di sini..."></textarea>
+                    `;
+                }
+                return `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-4" id="box_${s.id}">
+                        <p class="font-bold text-base mb-3">${s.nomor || (idx + 1)}. ${s.tanya}</p>
+                        ${konten}
+                    </div>
+                `;
+            };
+
+            let uiHtml = `
+                <div class="max-w-4xl mx-auto prevent-select">
+                    <div class="bg-white p-5 rounded-xl border-2 border-slate-300 mb-6 text-sm space-y-1">
+                        <p><strong>MATA PELAJARAN:</strong> ${jadwal.mapel}</p>
+                        <p><strong>HARI TANGGAL:</strong> ${jadwal.hari || ''}, ${formatTglIndo(jadwal.tgl)}</p>
+                        <p><strong>KELAS:</strong> ${jadwal.kelas}</p>
+                        <p><strong>Kompetensi Keahlian:</strong> AK / RPL / TB</p>
+                    </div>
+
+                    <form id="form-lembar-ujian">
+                        ${soalPG.length > 0 ? `<h3 class="font-bold text-lg text-slate-800 mb-3 bg-slate-200 px-4 py-2 rounded-lg">SOAL PILIHAN BERGANDA</h3>` : ''}
+                        ${soalPG.map((s, idx) => renderKartuSoal(s, idx)).join('')}
+
+                        ${soalEssay.length > 0 ? `<h3 class="font-bold text-lg text-slate-800 mt-6 mb-3 bg-slate-200 px-4 py-2 rounded-lg">SOAL PILIHAN ESSAY</h3>` : ''}
+                        ${soalEssay.map((s, idx) => renderKartuSoal(s, idx)).join('')}
+
+                        <button type="button" onclick="kumpulUjian()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl py-5 rounded-xl shadow-lg mt-4">SIMPAN & KUMPULKAN JAWABAN</button>
+                    </form>
+                </div>
+            `;
+            document.getElementById('content-area').innerHTML = uiHtml;
+
+            let display = document.getElementById('timer-display');
+            let peringatan1Menit = false;
+
+            const updateCountdown = () => {
+                let h = Math.floor(sisaDetik / 3600);
+                let m = Math.floor((sisaDetik % 3600) / 60);
+                let s = sisaDetik % 60;
+                display.innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                
+                if (sisaDetik === 60 && !peringatan1Menit) {
+                    peringatan1Menit = true;
+                    alert("Waktu tersisa 1 menit! Sistem akan otomatis mengumpulkan jawaban Anda.");
+                }
+                if (sisaDetik <= 0) {
+                    clearInterval(examTimer);
+                    alert("WAKTU HABIS! Sistem melakukan Kumpul Otomatis.");
+                    kumpulUjian();
+                }
+                sisaDetik--;
+            };
+
+            updateCountdown();
+            examTimer = setInterval(updateCountdown, 1000);
+        }
+
+        /* --- ANTI-CHEAT ENGINE --- */
+        function picuAntiCheat(pesan) {
+            try {
+                let speech = new SpeechSynthesisUtterance("Peringatan! Pelanggaran Ujian Terdeteksi.");
+                speech.lang = 'id-ID'; window.speechSynthesis.speak(speech);
+            } catch(e){}
+            alert("🚨 PELANGGARAN: " + pesan);
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden && isExamActive) picuAntiCheat("Anda dilarang berpindah Tab atau Aplikasi selama ujian!");
+        });
+        document.addEventListener("contextmenu", (e) => { if(isExamActive) { e.preventDefault(); } });
+        document.addEventListener("keydown", (e) => {
+            if (isExamActive && (e.key === 'PrintScreen' || (e.ctrlKey && ['c','v','s','p'].includes(e.key.toLowerCase())))) {
+                e.preventDefault(); navigator.clipboard.writeText(''); picuAntiCheat("Dilarang mengambil foto layar (Screenshot) / Menyalin Soal!");
+            }
+        });
+
+        /* --- SUBMIT & HASIL REVIEW (SESUAI GAMBAR 7) --- */
+        function kumpulUjian() {
+            clearInterval(examTimer);
+            isExamActive = false;
+            document.getElementById('topbar-warning').classList.add('hidden-section');
+            document.getElementById('sidebar').classList.remove('hidden-section');
+
+            let form = document.getElementById('form-lembar-ujian');
+            let formData = new FormData(form);
+            let benar = 0; let salah = 0;
+            let soalDikerjakan = window.currentExamQuestions || db.soal;
+            
+            let reviewHtml = `<div class="max-w-4xl mx-auto"><h2 class="text-3xl font-bold text-slate-800 mb-6">Hasil & Review Ujian (${activeExamSubject})</h2>`;
+
+            soalDikerjakan.forEach((s, idx) => {
+                let jwbSiswa = formData.get(`ans_${s.id}`) || "";
+                let isBenar = false;
+                
+                if (s.tipe === 'PG') {
+                    isBenar = (jwbSiswa === s.kunci);
+                } else {
+                    isBenar = (jwbSiswa.trim().length > 5);
+                }
+                
+                if (isBenar) benar++; else salah++;
+
+                if (s.tipe === 'PG') {
+                    let teksJwbSiswa = (jwbSiswa && s.opsi && s.opsi[jwbSiswa]) ? `${jwbSiswa}. ${s.opsi[jwbSiswa]}` : (jwbSiswa || "Tidak Menjawab");
+                    let teksKunci = (s.opsi && s.opsi[s.kunci]) ? `${s.kunci}. ${s.opsi[s.kunci]}` : s.kunci;
+
+                    reviewHtml += `
+                        <div class="bg-white p-6 rounded-xl shadow-sm border ${isBenar ? 'border-emerald-500' : 'border-red-500'} mb-4">
+                            <p class="text-xs font-bold uppercase text-slate-400 mb-1">SOAL PILIHAN BERGANDA</p>
+                            <p class="font-bold mb-2">${s.nomor || (idx+1)}. ${s.tanya}</p>
+                            <div class="p-3 rounded text-sm ${isBenar ? 'bg-emerald-50 text-emerald-900' : 'bg-red-50 text-red-900'} space-y-1">
+                                <p class="font-bold text-emerald-700">Kunci jawaban benar: ${teksKunci}</p>
+                                ${!isBenar ? `<p class="font-bold text-red-700">Salah: ${teksJwbSiswa}</p>` : `<p class="font-bold text-emerald-700">Jawaban Anda Benar: ${teksJwbSiswa}</p>`}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    reviewHtml += `
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-blue-400 mb-4">
+                            <p class="text-xs font-bold uppercase text-slate-400 mb-1">SOAL PILIHAN ESSAY</p>
+                            <p class="font-bold mb-2">${s.nomor || (idx+1)}. ${s.tanya}</p>
+                            <div class="p-3 rounded text-sm bg-slate-50 space-y-2">
+                                <p><strong>Jawaban kita:</strong> ${jwbSiswa || "Tidak Menjawab"}</p>
+                                <p class="font-bold text-emerald-700">Kunci jawaban: ${s.kunci}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            let bobot = 100 / soalDikerjakan.length;
+            let nilaiAkhir = Math.round(benar * bobot);
+            let infoWaktu = getDeviceDateTimeInfo();
+
+            db.hasilUjian.push({
+                id: Date.now(),
+                nama: currentUser.name,
+                mapel: activeExamSubject || 'Umum',
+                benar,
+                salah,
+                nilai: nilaiAkhir,
+                tgl: infoWaktu.tanggalAngka
+            });
+            saveData();
+
+            reviewHtml += `
+                <div class="bg-slate-900 text-white p-6 rounded-xl text-center shadow-xl mt-6">
+                    <h3 class="text-xl uppercase tracking-widest text-slate-400">Total Nilai Ujian</h3>
+                    <div class="text-6xl font-bold text-primary my-2">${nilaiAkhir}</div>
+                    <p>Benar: <span class="text-emerald-400 font-bold">${benar}</span> | Salah: <span class="text-red-400 font-bold">${salah}</span></p>
+                </div></div>
+            `;
+            document.getElementById('content-area').innerHTML = reviewHtml;
+        }
+
+        /* ================= MENU SISWA: RIWAYAT NILAI SAYA ================= */
+        function renderNilaiSiswa() {
+            let myScores = db.hasilUjian.filter(h => h.nama === currentUser.name);
+            let html = `
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Hasil & Riwayat Nilai Ujian Saya</h2>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table>
+                        <thead><tr><th>Tanggal</th><th>Mata Ujian</th><th>Benar</th><th>Salah</th><th>Nilai Akhir</th></tr></thead>
+                        <tbody>
+                            ${myScores.map(h => `
+                                <tr>
+                                    <td>${h.tgl}</td>
+                                    <td class="font-bold">${h.mapel || 'Ujian CBT'}</td>
+                                    <td class="text-emerald-600 font-bold">${h.benar}</td>
+                                    <td class="text-red-600 font-bold">${h.salah}</td>
+                                    <td class="text-xl font-black text-primary">${h.nilai}</td>
+                                </tr>
+                            `).join('') || `<tr><td colspan="5" class="text-center py-6 text-slate-400">Belum ada riwayat nilai ujian.</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* ================= FITUR 7: LAPORAN NILAI (ADMIN/GURU) ================= */
+        function renderLaporan() {
+            let html = `
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800">Laporan Otomatis Nilai Ujian Siswa</h2>
+                        <p class="text-sm text-slate-500">Formula: (Benar / Total Soal) * 100</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table>
+                        <thead><tr><th>Tanggal</th><th>Nama Siswa</th><th>Mata Ujian</th><th>Benar</th><th>Salah</th><th>Nilai Akhir</th><th>Aksi</th></tr></thead>
+                        <tbody>${db.hasilUjian.map(h => `
+                            <tr>
+                                <td>${h.tgl}</td><td class="font-bold">${h.nama}</td><td>${h.mapel || 'Ujian CBT'}</td><td class="text-emerald-600 font-bold">${h.benar}</td><td class="text-red-600 font-bold">${h.salah}</td>
+                                <td class="text-xl font-black text-primary">${h.nilai}</td>
+                                <td><button onclick="hapusData('hasilUjian', ${h.id}, renderLaporan)" class="bg-red-500 text-white px-2 py-1 rounded text-xs">HAPUS</button></td>
+                            </tr>
+                        `).join('') || `<tr><td colspan="7" class="text-center py-4">Belum ada data nilai</td></tr>`}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            setContent(html);
+        }
+
+        /* --- GLOBAL UTILS --- */
+        function hapusData(tabel, id, callback) {
+            if(confirm('Yakin ingin menghapus data ini?')) {
+                db[tabel] = db[tabel].filter(x => x.id !== id);
+                saveData(); callback();
+            }
+        }
+
+        function viewImage(base64) {
+            let overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.onclick = () => document.body.removeChild(overlay);
+            overlay.innerHTML = `<img src="${base64}" class="max-w-[90%] max-h-[90%] border-4 border-white rounded shadow-2xl">`;
+            document.body.appendChild(overlay);
+        }
+    </script>
+</body>
+</html>
